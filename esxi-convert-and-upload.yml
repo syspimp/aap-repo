@@ -1,0 +1,29 @@
+# play 1
+- name: "Customize qcow2 image, convert to vmdk and copy to esxi datastore"
+  hosts: builder
+  tags: image
+  vars:
+    ESXIHOSTS:
+      - 10.55.102.158
+      - 10.55.102.159
+    REQUIREDRPMS:
+      - jq
+      - open-vm-tools
+      #- vim-enhanced
+    COPYIN:
+      - download.sh
+      - firstboot.sh
+  environment:
+    LIBGUESTFS_BACKEND: direct
+  tasks:
+  - name: Customize the image
+    ansible.builtin.include_tasks: esxi-customize-image.yml
+
+# play 2
+- name: "Run vmfstools on new vmdk and make golden image"
+  hosts: esxi_host
+  tags: esxi
+  tasks:
+  - name: Prep the vmdk
+    ansible.builtin.include_tasks: esxi-vmdk-convert.yml
+

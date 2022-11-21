@@ -1,0 +1,9 @@
+---
+ansible-navigator:
+  execution-environment:
+    container-engine: podman
+    image: syspimp/ansible-ee:vmware
+    enabled: true
+    pull:
+      policy: always
+

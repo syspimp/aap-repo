@@ -1,0 +1,6 @@
+google-auth>=1.29.0
+google-auth-oauthlib>=0.5.0
+#libcloud>=0.0.0
+boto>=0.0.0
+requests>=0.0.0
+google-cloud-storage>=0.0.0

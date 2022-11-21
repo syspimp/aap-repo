@@ -1,0 +1,4 @@
+#libguestfs-tools [platform:redhat]
+#qemu-img [platform:redhat]
+#jq [platform:redhat]
+#python3-jmespath [platform:redhat]

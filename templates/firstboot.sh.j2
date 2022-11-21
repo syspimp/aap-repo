@@ -1,0 +1,54 @@
+#!/bin/bash -x
+
+while getopts "d" OPTION
+do
+  case "$OPTION" in
+    # debug
+    d) set -x
+    ;;
+  esac
+done
+
+main()
+{
+  # code goes here
+  growpart /dev/sda 3
+  xfs_growfs /dev/sda3
+  # configuration management loop
+  if [ -e /var/log/firstboot/.success ]
+  then
+     echo "*** firstboot.sh already run"
+     echo "*** firstboot.sh delete /var/log/firstboot to run again"
+     exit 0
+  fi
+
+  mkdir -p /var/log/firstboot
+
+  # wait for the network to wake up
+  while ! ping -c 1 -W 2 8.8.8.8 > /dev/null
+  do
+    sleep 5
+  done
+
+  newhostname=""
+  # wait until vmtoolsd returns a hostname
+  while [[ "XX${newhostname}XX" != "XXXX" ]]
+  do
+    newhostname=$(/usr/bin/vmware-rpctool "info-get guestinfo.hostname")
+    sleep 10
+  done
+
+  # wait until tower/aws returns a success message
+  while [[ ! -e /var/log/firstboot/.success ]]
+  do
+    curl -s -k --data 'host_config_key={{ aap_host_config_key }}' {{ aap_callback_url }} | \
+    grep msg || \
+    touch /var/log/firstboot/.success
+    sleep 60
+  done
+}
+
+main
+exit 0
+
+

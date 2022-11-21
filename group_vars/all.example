@@ -1,0 +1,43 @@
+INPUT: ./rhel-8.6-x86_64-kvm.qcow2
+OUTPUT: RHEL86-GOLDTEMPLATE
+#####
+#NEWVM: management
+#VMMEM: 32768
+#ROLE: "satellite-server"
+#SECONDARYROLE: "None"
+#####
+NEWVM: monitoring
+VMMEM: 32768
+ROLE: "minikube"
+SECONDARYROLE: "zenoss-monitoring"
+######
+VMCPUS: 8
+#VMMEM: 16384
+VMWROOT: /vmfs/volumes/datastore1
+###############################################
+#customize these values
+###############################################
+SUBUSER: "redhat cdn username"
+SUBPASS: "redhat_cdn password"
+VCENTER_USER: root
+ROOTPASS: "CHANGEPASS"
+SSHPUBKEY: id_rsa.pub
+SSHPUBKEYCONTENTS: "paste in your public key"
+OFFLINE_TOKEN: "paste in your redhat offline token"
+tower:
+  server: 10.55.102.51
+  user: admin
+  pass: "{{ ROOTPASS }}"
+  esxi_inventory_ids:
+  - 40
+  - 41
+aap_callback_url: "https://{{ tower.server }}/api/v2/job_templates/21/callback/"
+aap_host_config_key: firstboot
+################################################
+# checksum of images to download
+aap2: ad7a47fe00a52347eac978a99e96392decfdff121e4e61f0e038c7d6603d37f5
+rhel90: 92862e085e4d5690cfa57de7155aa29bfdf21feec3d46dd4b61ca63293312af7
+rhel86: c9b32bef88d605d754b932aad0140e1955ab9446818c70c4c36ca75d6f442fe9
+rhel79: 46ed32cbe8183930f2488972a6d13bae2053e23c2f8ab8afa4d6e6757e9a7130
+# default image to download
+CHECKSUM: "{{ rhel86 }}"

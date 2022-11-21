@@ -1,0 +1,25 @@
+---
+- name: error control for esxi hypervisor
+  block:
+  - name: "esxi_host: Ensure ssh key is set"
+    copy:
+      src: "{{ playbook_dir }}/templates/{{ SSHPUBKEY }}.j2"
+      dest: "/etc/ssh/keys-root/authorized_keys"
+      backup: yes
+      remote_src: no
+
+  - name: "esxi_host: create directory to hold new vmdk"
+    file:
+      path: "{{ VMWROOT }}/{{ OUTPUT }}"
+      state: directory
+
+  - name: "esxi_host: running vmkfstools to create new vmdk in directory"
+    shell: |
+      rm -f {{ VMWROOT }}/{{ OUTPUT }}/*
+      vmkfstools -i {{ VMWROOT }}/{{ OUTPUT }}.tmp.vmdk  -d thin {{ VMWROOT }}/{{ OUTPUT }}/{{ OUTPUT }}.vmdk
+
+  always:
+  - name: "esxi_host: cleaning up and removing tmp vmdk"
+    file:
+      path: "{{ VMWROOT }}/{{ OUTPUT }}.tmp.vmdk"
+      state: absent

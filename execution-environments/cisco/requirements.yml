@@ -1,0 +1,10 @@
+---
+# to install, run ./setup.sh
+# or ansible-galaxy install -r requirements.yml
+collections:
+  - name: cisco.ios
+  - name: community.general
+  - name: ansible.netcommon
+  - name: ansible.posix
+  - name: ansible.utils
+

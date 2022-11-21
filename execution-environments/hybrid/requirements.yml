@@ -1,0 +1,24 @@
+---
+# to install, run ./setup.sh
+# or ansible-galaxy install -r requirements.yml
+collections:
+  - name: cisco.ios
+  - name: google.cloud
+  - name: ibm.cloudcollection
+  - name: vmware.vmware_rest
+  - name: amazon.aws
+    version: 1.5.0
+  - name: performancecopilot.metrics
+    version: 2.2.4
+  - name: community.general
+  - name: community.mysql
+  - name: community.vmware
+  - name: community.aws
+    version: 1.5.0
+  - name: awx.awx
+  - name: ansible.netcommon
+  - name: ansible.posix
+  - name: ansible.utils
+  - name: ansible.windows
+  - name: redhat.satellite
+

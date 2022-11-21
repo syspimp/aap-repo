@@ -1,0 +1,40 @@
+#!/bin/bash
+# get the checksum from the download page: https://access.redhat.com/downloads/
+aap2=ad7a47fe00a52347eac978a99e96392decfdff121e4e61f0e038c7d6603d37f5
+rhel90=92862e085e4d5690cfa57de7155aa29bfdf21feec3d46dd4b61ca63293312af7
+rhel86=c9b32bef88d605d754b932aad0140e1955ab9446818c70c4c36ca75d6f442fe9
+rhel79=46ed32cbe8183930f2488972a6d13bae2053e23c2f8ab8afa4d6e6757e9a7130
+checksum=${rhel86}
+
+# get offline token: https://access.redhat.com/management/api  
+offline_token="{{ OFFLINE_TOKEN }}"
+while getopts "d" OPTION
+do
+  case "$OPTION" in
+    # debug
+    d) set -x
+    ;;
+  esac
+done
+
+main()
+{
+  # get an access token
+  access_token=$(curl https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token=$offline_token | jq -r '.access_token')
+  
+  # get the filename and download url
+  image=$(curl -H "Authorization: Bearer $access_token" "https://api.access.redhat.com/management/v1/images/$checksum/download")
+  filename=$(echo $image | jq -r .body.filename)
+  url=$(echo $image | jq -r .body.href)
+  
+  if [[ ! -e "${filename}" ]]
+  then
+    # download the file
+    curl $url -o $filename
+  fi
+}
+
+main
+exit 0
+
+

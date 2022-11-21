@@ -1,0 +1,6 @@
+[builder]
+laptop ansible_host=10.55.102.87 ansible_connection=local
+
+[esxi_host]
+compute5 ansible_host=10.55.102.159 ansible_user=root ansible_ssh_pass=mypassword
+compute4 ansible_host=10.55.102.158 ansible_user=root ansible_ssh_pass=mypassword
