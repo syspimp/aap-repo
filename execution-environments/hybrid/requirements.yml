@@ -3,19 +3,30 @@
 # or ansible-galaxy install -r requirements.yml
 collections:
   - name: cisco.ios
+    source: https://galaxy.ansible.com
   - name: google.cloud
+    source: https://galaxy.ansible.com
   - name: ibm.cloudcollection
+    source: https://galaxy.ansible.com
   - name: vmware.vmware_rest
+    source: https://galaxy.ansible.com
   - name: amazon.aws
+    source: https://galaxy.ansible.com
     version: 1.5.0
   - name: performancecopilot.metrics
+    source: https://galaxy.ansible.com
     version: 2.2.4
   - name: community.general
+    source: https://galaxy.ansible.com
   - name: community.mysql
+    source: https://galaxy.ansible.com
   - name: community.vmware
+    source: https://galaxy.ansible.com
   - name: community.aws
     version: 1.5.0
+    source: https://galaxy.ansible.com
   - name: awx.awx
+    source: https://galaxy.ansible.com
   - name: ansible.netcommon
   - name: ansible.posix
   - name: ansible.utils

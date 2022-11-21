@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 # log into your provider first
 # podman login docker.io
 TAG="hybridz5:latest"
@@ -31,6 +31,11 @@ done
 main()
 {
   # code goes here
+  if [[ ! -e ansible.cfg ]]
+  then
+    echo -e "\nYou need to edit and copy ansible.cfg.example to ansible.cfg\n\n"
+    exit 1
+  fi
   if [[ -z "${TAG}" ]]
   then
     echo "\n**Need a tag, friend.\nTry $* -t yourmoms:latest\n\n"
@@ -38,6 +43,11 @@ main()
   fi
   echo "**Building the image"
   ansible-builder build -t ${TAG} -v ${VERBOSE} ${USE_CACHE}
+  if [[ $? -ne 0 ]]
+  then
+    echo -e "\nBuild failed\n\n"
+    exit 1
+  fi
   echo "**Tagging the image..."
   podman tag localhost/${TAG} ${UPSTREAM_REPO}:${UPSTREAM_TAG}
   echo "**Pushing to the cloud..."
