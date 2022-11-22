@@ -3,6 +3,30 @@
   vars:
     ESXIHOST: compute4.tfound.org
   tasks:
+  - name: "Power off virtual machine"
+    community.vmware.vmware_guest:
+      hostname: "{{ ESXIHOST }}"
+      username: "{{ VCENTER_USER }}"
+      password: "{{ ROOTPASS }}"
+      validate_certs: no
+      name: "{{ NEWVM }}"
+      state: poweredoff
+    delegate_to: localhost
+
+  - name: "Remove disks from virtual machine using name"
+    community.vmware.vmware_guest_disk:
+      hostname: "{{ ESXIHOST }}"
+      username: "{{ VCENTER_USER }}"
+      password: "{{ ROOTPASS }}"
+      name: "{{ NEWVM }}"
+      disk:
+        - state: absent
+          scsi_controller: 1
+          unit_number: 1
+          destroy: yes
+    delegate_to: localhost
+    register: disk_facts
+
   - name: "Delete a virtual machine"
     community.vmware.vmware_guest:
       hostname: "{{ ESXIHOST }}"
