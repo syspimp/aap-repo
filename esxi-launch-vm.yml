@@ -24,7 +24,7 @@
       disk:
       - filename: "[datastore1] {{ NEWVM }}/{{ OUTPUT }}.vmdk"
         datastore: "datastore1"
-        size_gb: 80
+        size_gb: "{{ VMDISKSIZE }}"
       hardware:
         memory_mb: "{{ VMMEM }}"
         num_cpus: "{{ VMCPUS }}"
@@ -78,6 +78,27 @@
       echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
       echo -e "\nguestinfo.role = \"{{ ROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
       echo -e "\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
+
+  - name: "Expand disks for virtual machine using uuid"
+    community.vmware.vmware_guest_disk:
+      hostname: "{{ ESXIHOST }}"
+      username: "{{ VCENTER_USER }}"
+      password: "{{ ROOTPASS }}"
+      validate_certs: no
+      #name: "{{ NEWVM }}"
+      uuid: "{{ deploy.instance_uuid }}"
+      folder: "/ha-datacenter/vm/"
+      disk:
+        - size_gb: "{{ VMDISKSIZE }}"
+          type: "thin"
+          datastore: "datastore1"
+          state: present
+          scsi_controller: "1"
+          unit_number: "1"
+          scsi_type: "paravirtual"
+          disk_mode: "paravirtual"
+    delegate_to: localhost
+    register: disk_facts
 
   - name: "Power on virtual machine"
     community.vmware.vmware_guest:
