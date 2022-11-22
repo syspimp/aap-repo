@@ -86,7 +86,7 @@
       password: "{{ ROOTPASS }}"
       validate_certs: no
       #name: "{{ NEWVM }}"
-      uuid: "{{ deploy.instance_uuid }}"
+      uuid: "{{ deploy.instance.instance_uuid }}"
       folder: "/ha-datacenter/vm/"
       disk:
         - size_gb: "{{ VMDISKSIZE }}"
