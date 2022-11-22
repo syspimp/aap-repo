@@ -1,5 +1,7 @@
 - name: "Launch a vm in vmware from a golden image and callback to aap for provisioning"
   hosts: compute4
+  vars:
+    ESXIHOST: compute4.tfound.org
   tasks:
   - name: "esxi_host: copy golden image directory on esxi host"
     shell: |
@@ -10,7 +12,7 @@
 
   - name: "Create a virtual machine and attach golden vmdk"
     community.vmware.vmware_guest:
-      hostname: "{{ ansible_facts.fqdn }}"
+      hostname: "{{ ESXIHOST }}"
       username: "{{ VCENTER_USER }}"
       password: "{{ ROOTPASS }}"
       validate_certs: no
@@ -59,7 +61,7 @@
 
   - name: "Power off virtual machine"
     community.vmware.vmware_guest:
-      hostname: "{{ ansible_facts.fqdn }}"
+      hostname: "{{ ESXIHOST }}"
       username: "{{ VCENTER_USER }}"
       password: "{{ ROOTPASS }}"
       validate_certs: no
@@ -79,7 +81,7 @@
 
   - name: "Power on virtual machine"
     community.vmware.vmware_guest:
-      hostname: "{{ ansible_facts.fqdn }}"
+      hostname: "{{ ESXIHOST }}"
       username: "{{ VCENTER_USER }}"
       password: "{{ ROOTPASS }}"
       validate_certs: no

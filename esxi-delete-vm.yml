@@ -1,9 +1,11 @@
 - name: "Delete a vm in vmware by name"
   hosts: compute4
+  vars:
+    ESXIHOST: compute4.tfound.org
   tasks:
   - name: "Delete a virtual machine"
     community.vmware.vmware_guest:
-      hostname: "{{ ansible_facts.fqdn }}"
+      hostname: "{{ ESXIHOST }}"
       username: "{{ VCENTER_USER }}"
       password: "{{ ROOTPASS }}"
       validate_certs: no
