@@ -1,0 +1,18 @@
+- name: "Delete a vm in vmware by name"
+  hosts: compute4
+  tasks:
+  - name: "Delete a virtual machine and attach golden vmdk"
+    community.vmware.vmware_guest:
+      hostname: "{{ ansible_facts.fqdn }}"
+      username: "{{ VCENTER_USER }}"
+      password: "{{ ROOTPASS }}"
+      validate_certs: no
+      name: "{{ NEWVM }}"
+      delete_from_inventory: True
+      state: absent
+    delegate_to: localhost
+    register: deploy
+
+  - name: "what that mouth do?"
+    debug: var=deploy
+
