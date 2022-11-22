@@ -1,7 +1,7 @@
 - name: "Delete a vm in vmware by name"
   hosts: compute4
   tasks:
-  - name: "Delete a virtual machine and attach golden vmdk"
+  - name: "Delete a virtual machine"
     community.vmware.vmware_guest:
       hostname: "{{ ansible_facts.fqdn }}"
       username: "{{ VCENTER_USER }}"
