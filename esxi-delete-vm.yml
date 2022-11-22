@@ -16,6 +16,7 @@
     delegate_to: localhost
     register: deploy
 
-  - name: "what that mouth do?"
-    debug: var=deploy
+  - name: "Let's wait 15 seconds"
+    pause:
+      seconds: 15
 
