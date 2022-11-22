@@ -10,6 +10,7 @@
       name: "{{ NEWVM }}"
       delete_from_inventory: True
       state: absent
+      force: yes
     delegate_to: localhost
     register: deploy
 
