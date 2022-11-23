@@ -5,7 +5,7 @@
   tasks:
   - name: "esxi_host: copy golden image directory on esxi host"
     shell: |
-      ssh root@{{ ESXIHOST }} "if [ ! -e '{{ VMWROOT }}/{{ NEWVM }}' ]  \
+      ssh -o "StrictHostKeyChecking no" root@{{ ESXIHOST }} "if [ ! -e '{{ VMWROOT }}/{{ NEWVM }}' ]  \
       then \
         cp -R {{ VMWROOT }}/{{ OUTPUT }} {{ VMWROOT }}/{{ NEWVM }} \
       fi"
