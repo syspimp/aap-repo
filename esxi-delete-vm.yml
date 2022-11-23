@@ -47,32 +47,32 @@
     pause:
       seconds: 15
 
-- name: "Block remove from Ansible Tower inventory"
-  block:
-    - name: "Get host id to remove Inventory"
-      uri:
-        url: "https://{{ tower.server }}/api/v2/hosts/?name={{ NEWVM }}"
-        validate_certs: no
-        method: GET
-        user: "{{ tower.user }}"
-        password: "{{ tower.pass }}"
-        force_basic_auth: yes
-        status_code: [200,202,204]
-        body_format: json
-      register: hostidcheck
+  - name: "Block remove from Ansible Tower inventory"
+    block:
+      - name: "Get host id to remove Inventory"
+        uri:
+          url: "https://{{ tower.server }}/api/v2/hosts/?name={{ NEWVM }}"
+          validate_certs: no
+          method: GET
+          user: "{{ tower.user }}"
+          password: "{{ tower.pass }}"
+          force_basic_auth: yes
+          status_code: [200,202,204]
+          body_format: json
+        register: hostidcheck
 
-    - name: "Set the host_id fact"
-      set_fact:
-        host_id: "{{ hostidcheck.json.results[0].id }}"
+      - name: "Set the host_id fact"
+        set_fact:
+          host_id: "{{ hostidcheck.json.results[0].id }}"
 
-    - name: "Remove host from the Inventory"
-      uri:
-        url: "https://{{ tower.server }}/api/v2/hosts/{{ host_id }}/"
-        validate_certs: no
-        method: DELETE
-        user: "{{ tower.user }}"
-        password: "{{ tower.pass }}"
-        force_basic_auth: yes
-        status_code: [201,202,204]
-        body_format: json
+      - name: "Remove host from the Inventory"
+        uri:
+          url: "https://{{ tower.server }}/api/v2/hosts/{{ host_id }}/"
+          validate_certs: no
+          method: DELETE
+          user: "{{ tower.user }}"
+          password: "{{ tower.pass }}"
+          force_basic_auth: yes
+          status_code: [201,202,204]
+          body_format: json
 
