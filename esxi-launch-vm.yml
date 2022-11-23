@@ -1,17 +1,16 @@
 - name: "Launch a vm in vmware from a golden image and callback to aap for provisioning"
-  hosts: compute4
+  hosts: "{{ ESXIHOST | default('compute4',True) }}"
   vars:
     ESXIHOST: compute4.tfound.org
   tasks:
-  - name: "esxi_host: copy golden image directory on esxi host"
+  - name: "[esxi_host] copy golden image directory on esxi host"
     shell: |
-      ssh -o "StrictHostKeyChecking no" root@{{ ESXIHOST }} "if [ ! -e '{{ VMWROOT }}/{{ NEWVM }}' ]  \
+      if [ ! -e '{{ VMWROOT }}/{{ NEWVM }}' ]  \
       then \
         cp -R {{ VMWROOT }}/{{ OUTPUT }} {{ VMWROOT }}/{{ NEWVM }} \
-      fi"
-    delegate_to: localhost
+      fi
 
-  - name: "Create a virtual machine and attach golden vmdk"
+  - name: "[esxi_host] Create a virtual machine and attach golden vmdk"
     community.vmware.vmware_guest:
       hostname: "{{ ESXIHOST }}"
       username: "{{ VCENTER_USER }}"
@@ -57,10 +56,10 @@
     delegate_to: localhost
     register: deploy
 
-  - name: "what that mouth do?"
+  - name: "[esxi_host] what that mouth do?"
     debug: var=deploy
 
-  - name: "Power off virtual machine"
+  - name: "[esxi_host] Power off virtual machine"
     community.vmware.vmware_guest:
       hostname: "{{ ESXIHOST }}"
       username: "{{ VCENTER_USER }}"
@@ -70,15 +69,13 @@
       state: poweredoff
     delegate_to: localhost
 
-  - name: "Let's wait 15 seconds"
+  - name: "[esxi_host] Let's wait 15 seconds"
     pause:
       seconds: 15
 
-  - name: "esxi_host: add some parameters to the vmx file on the hypervisor for the hostname"
+  - name: "[esxi_host] add some parameters to the vmx file on the hypervisor for the hostname"
     shell: |
-      ssh -o "StrictHostKeyChecking no" root@{{ ESXIHOST }} \
-      'echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"\nguestinfo.role = \"{{ ROLE }}\"\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx'
-    delegate_to: localhost
+      echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"\nguestinfo.role = \"{{ ROLE }}\"\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
 
 #  - name: "Expand disks for virtual machine using uuid"
 #    community.vmware.vmware_guest_disk:
@@ -101,7 +98,7 @@
 #    delegate_to: localhost
 #    register: disk_facts
 
-  - name: "Power on virtual machine"
+  - name: "[esxi_host] Power on virtual machine"
     community.vmware.vmware_guest:
       hostname: "{{ ESXIHOST }}"
       username: "{{ VCENTER_USER }}"
@@ -111,11 +108,11 @@
       state: poweredon
     delegate_to: localhost
 
-  - name: "Let's wait a minute for it to boot and populate it's ip address to vmware"
+  - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to vmware"
     pause:
       minutes: 1
 
-  - name: "Update the ESXI Inventory"
+  - name: "[esxi_host] Update the ESXI Inventory"
     ignore_errors: yes
     uri:
       url: https://{{ tower.server }}/api/v2/inventory_sources/{{ item }}/update/
