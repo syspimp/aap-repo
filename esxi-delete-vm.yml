@@ -47,7 +47,14 @@
     pause:
       seconds: 15
 
-  - name: "Block remove from Ansible Tower inventory"
+  - name: "[esxi_host] delete the drive if found on esxi host"
+    shell: |
+      if [ -e '{{ VMWROOT }}/{{ NEWVM }}' ]
+      then
+        rm -rf "{{ VMWROOT }}/{{ NEWVM }}"
+      fi
+
+  - name: "Block to remove from Ansible Tower inventory"
     block:
       - name: "Get host id to remove Inventory"
         uri:
