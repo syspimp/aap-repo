@@ -108,7 +108,7 @@
       state: poweredon
     delegate_to: localhost
     register: result
-    until: result.instance.hw_power_status == "poweredon"
+    #until: result.instance.hw_power_status == "poweredOn"
     retries: 3
 
   - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to vmware"
