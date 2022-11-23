@@ -144,6 +144,7 @@
           status_code: [200,202,204]
           body_format: json
         register: hostidcheck
+        delegate_to: localhost
 
       - name: "Set the host_id fact"
         set_fact:
@@ -160,6 +161,7 @@
           status_code: [200,202,204]
           body_format: json
         register: groupidcheck
+        delegate_to: localhost
 
       - name: "Set the group_id fact"
         set_fact:
@@ -180,4 +182,5 @@
           force_basic_auth: yes
           status_code: [201,202,204]
           body_format: json
+        delegate_to: localhost
 
