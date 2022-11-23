@@ -76,9 +76,9 @@
 
   - name: "esxi_host: add some parameters to the vmx file on the hypervisor for the hostname"
     shell: |
-      echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
-      echo -e "\nguestinfo.role = \"{{ ROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
-      echo -e "\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
+      ssh -o "StrictHostKeyChecking no" root@{{ ESXIHOST }} \
+      'echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"\nguestinfo.role = \"{{ ROLE }}\"\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx'
+    delegate_to: localhost
 
 #  - name: "Expand disks for virtual machine using uuid"
 #    community.vmware.vmware_guest_disk:
