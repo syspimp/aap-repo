@@ -1,5 +1,5 @@
 - name: "Delete a vm in vmware by name"
-  hosts: compute4
+  hosts: "{{ ESXIHOST | default('compute4.tfound.org',True) }}"
   vars:
     ESXIHOST: compute4.tfound.org
   tasks:

@@ -1,13 +1,13 @@
 - name: "Launch a vm in vmware from a golden image and callback to aap for provisioning"
-  hosts: "{{ ESXIHOST | default('compute4',True) }}"
+  hosts: "{{ ESXIHOST | default('compute4.tfound.org',True) }}"
   vars:
     ESXIHOST: compute4.tfound.org
   tasks:
   - name: "[esxi_host] copy golden image directory on esxi host"
     shell: |
-      if [ ! -e '{{ VMWROOT }}/{{ NEWVM }}' ]  \
-      then \
-        cp -R {{ VMWROOT }}/{{ OUTPUT }} {{ VMWROOT }}/{{ NEWVM }} \
+      if [ ! -e '{{ VMWROOT }}/{{ NEWVM }}' ]
+      then
+        cp -R "{{ VMWROOT }}/{{ OUTPUT }}" "{{ VMWROOT }}/{{ NEWVM }}"
       fi
 
   - name: "[esxi_host] Create a virtual machine and attach golden vmdk"
