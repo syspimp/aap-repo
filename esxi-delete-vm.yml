@@ -81,4 +81,4 @@
     rescue:
     - name: "[esxi_host] inventory"
       debug:
-        msg: "well, coulnd't talk to the tower server"
+        msg: "host might not exist in tower"
