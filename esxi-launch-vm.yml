@@ -107,6 +107,9 @@
       name: "{{ NEWVM }}"
       state: poweredon
     delegate_to: localhost
+    register: result
+    until: result.rc == 0
+    retries: 3
 
   - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to vmware"
     pause:
