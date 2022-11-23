@@ -184,3 +184,9 @@
           body_format: json
         delegate_to: localhost
 
+    rescue:
+    - name: "[esxi_host] inventory"
+      debug:
+        msg: "well, coulnd't talk to the tower server"
+
+
