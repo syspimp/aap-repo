@@ -5,10 +5,11 @@
   tasks:
   - name: "esxi_host: copy golden image directory on esxi host"
     shell: |
-      if [ ! -e "{{ VMWROOT }}/{{ NEWVM }}" ]
-      then
-        cp -R {{ VMWROOT }}/{{ OUTPUT }} {{ VMWROOT }}/{{ NEWVM }}
-      fi
+      ssh root@{{ ESXIHOST }} "if [ ! -e '{{ VMWROOT }}/{{ NEWVM }}' ]  \
+      then \
+        cp -R {{ VMWROOT }}/{{ OUTPUT }} {{ VMWROOT }}/{{ NEWVM }} \
+      fi"
+    delegate_to: localhost
 
   - name: "Create a virtual machine and attach golden vmdk"
     community.vmware.vmware_guest:
