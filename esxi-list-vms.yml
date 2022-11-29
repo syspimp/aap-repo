@@ -1,0 +1,20 @@
+- name: "Launch a vm in vmware from a golden image and callback to aap for provisioning"
+  hosts: "{{ ESXIHOST | default('compute4.tfound.org',True) }}"
+  vars:
+    ESXIHOSTS: 
+      - compute4.tfound.org
+      - compute5.tfound.org
+  tasks:
+  - name: Gather all registered virtual machines
+    community.vmware.vmware_vm_info:
+      hostname: '{{ item }}'
+      username: '{{ vcenter_username }}'
+      password: '{{ vcenter_password }}'
+    delegate_to: localhost
+    register: vminfo
+    loop:
+      - ESXIHOSTS
+
+  - debug:
+      var: vminfo.virtual_machines
+
