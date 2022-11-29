@@ -8,8 +8,8 @@
   - name: Gather all registered virtual machines
     community.vmware.vmware_vm_info:
       hostname: '{{ item }}'
-      username: '{{ vcenter_username }}'
-      password: '{{ vcenter_password }}'
+      username: "{{ VCENTER_USER }}"
+      password: "{{ ROOTPASS }}"
     delegate_to: localhost
     register: vminfo
     loop:
