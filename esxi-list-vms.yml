@@ -10,6 +10,7 @@
       hostname: '{{ item }}'
       username: "{{ VCENTER_USER }}"
       password: "{{ ROOTPASS }}"
+      validate_certs: no
     delegate_to: localhost
     register: vminfo
     loop:
