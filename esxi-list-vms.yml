@@ -12,8 +12,7 @@
       password: "{{ ROOTPASS }}"
     delegate_to: localhost
     register: vminfo
-    loop:
-      - ESXIHOSTS
+    loop: "{{ ESXIHOSTS }}"
 
   - debug:
       var: vminfo.virtual_machines
