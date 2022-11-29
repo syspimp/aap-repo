@@ -12,7 +12,9 @@
       password: "{{ ROOTPASS }}"
     delegate_to: localhost
     register: vminfo
-    loop: "{{ ESXIHOSTS }}"
+    loop:
+    - compute4.tfound.org
+    - compute5.tfound.org
 
   - debug:
       var: vminfo.virtual_machines
