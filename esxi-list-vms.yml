@@ -18,5 +18,6 @@
     - compute5.tfound.org
 
   - debug:
-      var: vminfo.virtual_machines
+      var: item.virtual_machines
+    loop: "{{ vminfo.results }}"
 
