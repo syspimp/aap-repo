@@ -1,0 +1,37 @@
+- hosts: builder
+  vars:
+    EE_TYPE: "hybrid"
+    VERBOSE: 3
+    USE_CACHE: "--no-cache"
+    TAG: "{{ EE_TYPE }}z7:latest"
+    UPSTREAM_REPO: docker.io/syspimp/ansible-ee
+    UPSTREAM_TAG: "{{ EE_TYPE }}"
+  tasks:
+  - name: "Check if image file exists in playbook dir"
+    stat:
+      path: "{{ playbook_dir }}/execution-environments/{{ EE_TYPE }}/ansible.cfg"
+    register: playconfig
+
+  - name: "Fail when ansible.cfg not configured"
+    ansible.builtin.fail:
+      msg: "You need to read and configure execution-environents/{{ EE_TYPE }}/ansible.cfg"
+    when: playconfig.stat.exists == false
+
+  - name: "**Building the image" 
+    shell: |
+      ansible-builder build -t {{ TAG }} -v {{ VERBOSE }} {{ USE_CACHE }}
+    args:
+      chdir: "{{ playbook_dir }}/execution-environments/{{ EE_TYPE }}"
+
+  - name:
+    shell: |
+      podman tag localhost/{{ TAG }} {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
+    args:
+      chdir: "{{ playbook_dir }}/execution-environments/{{ EE_TYPE }}"
+
+  - name: "**Pushing to the cloud..."
+    shell: |
+      podman push {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
+    args:
+      chdir: "{{ playbook_dir }}/execution-environments/{{ EE_TYPE }}"
+
