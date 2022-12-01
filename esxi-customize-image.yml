@@ -6,7 +6,7 @@
       
   - name: create the filename
     shell: |
-      curl -H "Authorization: Bearer {{ access_token.stdout }}" "https://api.access.redhat.com/management/v1/images/{{ CHECKSUM }}/download"
+      curl -H "Authorization: Bearer {{ access_token.stdout }}" "https://api.access.redhat.com/management/v1/images/{{ images[selected_os].chksum }}/download"
     register: imageraw
 
 #  - name: create the filename by script
@@ -84,10 +84,10 @@
           state: present
         become: yes
 
-  - name: "builder: working from backup of image {{ INPUT }}"
+  - name: "builder: working from backup of image {{ images[selected_os].input }}"
     ansible.builtin.copy:
-      src: "/tmp/{{ INPUT }}"
-      dest: "/tmp/{{ INPUT }}.custom"
+      src: "/tmp/{{ images[selected_os].input }}"
+      dest: "/tmp/{{ images[selected_os].input }}.custom"
       backup: yes
       remote_src: yes
 
