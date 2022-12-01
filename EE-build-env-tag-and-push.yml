@@ -1,4 +1,4 @@
-- hosts: builders
+- hosts: builder*
   vars:
     EE_TYPE: "hybrid"
     VERBOSE: 3
