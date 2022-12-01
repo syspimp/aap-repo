@@ -1,6 +1,6 @@
 # play 1
 - name: "Customize qcow2 image, convert to vmdk and copy to esxi datastore"
-  hosts: builder
+  hosts: builders
   tags: image
   vars:
     ESXIHOSTS:
@@ -21,7 +21,7 @@
 
 # play 2
 - name: "Run vmfstools on new vmdk and make golden image"
-  hosts: esxi_host
+  hosts: esxi-hosts
   tags: esxi
   tasks:
   - name: Prep the vmdk
