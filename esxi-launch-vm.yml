@@ -136,7 +136,7 @@
 
   - name: "Block add to Ansible Tower inventory"
     block:
-      - name: "Get host id to add to the 'tang-servers' Group Inventory"
+      - name: "Get host id to add to the 'esxi-vms' Group Inventory"
         uri:
           url: "https://{{ tower.server }}/api/v2/hosts/?name={{ deploy.instance.hw_name + '_' + deploy.instance.hw_product_uuid }}"
           validate_certs: no
