@@ -5,3 +5,4 @@ google-auth-oauthlib>=0.5.0
 boto>=0.0.0
 requests>=0.0.0
 google-cloud-storage>=0.0.0
+pynetgear>=0.10.5
