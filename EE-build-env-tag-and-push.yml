@@ -18,7 +18,11 @@
     when: playconfig.stat.exists == false
 
   - name: "**Building the image" 
+    environment:
+      subuser: "{{ SUBUSER }}"
+      subpass: "{{ SUBPASS }}"
     shell: |
+      podman login -u "${subuser}" -p "${subpass}" registry.redhat.io
       ansible-builder build -t {{ TAG }} -v {{ VERBOSE }} {{ USE_CACHE }}
     args:
       chdir: "/opt/execution-environments/{{ EE_TYPE }}"
@@ -30,7 +34,11 @@
       chdir: "/opt/execution-environments/{{ EE_TYPE }}"
 
   - name: "**Pushing to the cloud..."
+    environment:
+      dockeruser: "{{ DOCKERUSER }}"
+      dockerpass: "{{ DOCKERPASS }}"
     shell: |
+      podman login -u "${dockeruser}" -p "${dockerpass}" docker.io
       podman push {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
     args:
       chdir: "/opt/execution-environments/{{ EE_TYPE }}"
