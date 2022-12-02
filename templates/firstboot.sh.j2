@@ -44,7 +44,7 @@ main()
     curl -s -k --data 'host_config_key={{ aap_host_config_key }}' {{ aap_callback_url }} | \
     grep msg || \
     touch /var/log/firstboot/.success
-    sleep 60
+    sleep 10
   done
 }
 
