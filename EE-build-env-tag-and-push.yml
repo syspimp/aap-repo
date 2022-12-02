@@ -9,7 +9,7 @@
   tasks:
   - name: "Check if image file exists in playbook dir"
     stat:
-      path: "{{ playbook_dir }}/execution-environments/{{ EE_TYPE }}/ansible.cfg"
+      path: "/opt/execution-environments/{{ EE_TYPE }}/ansible.cfg"
     register: playconfig
 
   - name: "Fail when ansible.cfg not configured"
@@ -21,17 +21,17 @@
     shell: |
       ansible-builder build -t {{ TAG }} -v {{ VERBOSE }} {{ USE_CACHE }}
     args:
-      chdir: "{{ playbook_dir }}/execution-environments/{{ EE_TYPE }}"
+      chdir: "/opt/execution-environments/{{ EE_TYPE }}"
 
   - name:
     shell: |
       podman tag localhost/{{ TAG }} {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
     args:
-      chdir: "{{ playbook_dir }}/execution-environments/{{ EE_TYPE }}"
+      chdir: "/opt/execution-environments/{{ EE_TYPE }}"
 
   - name: "**Pushing to the cloud..."
     shell: |
       podman push {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
     args:
-      chdir: "{{ playbook_dir }}/execution-environments/{{ EE_TYPE }}"
+      chdir: "/opt/execution-environments/{{ EE_TYPE }}"
 
