@@ -12,7 +12,7 @@ collections:
     source: https://galaxy.ansible.com
   - name: amazon.aws
     source: https://galaxy.ansible.com
-    version: 1.5.0
+    #version: 1.5.0
   - name: performancecopilot.metrics
     source: https://galaxy.ansible.com
     version: 2.2.4
@@ -23,7 +23,7 @@ collections:
   - name: community.vmware
     source: https://galaxy.ansible.com
   - name: community.aws
-    version: 1.5.0
+    #version: 1.5.0
     source: https://galaxy.ansible.com
   - name: awx.awx
     source: https://galaxy.ansible.com
