@@ -19,6 +19,7 @@ done
 main()
 {
   # code goes here
+  export ANSIBLE_VAULT_PASSWORD_FILE=.vault_password.sh
   ansible-navigator -m stdout run $playbook --inventory hosts.inv
 }
 
