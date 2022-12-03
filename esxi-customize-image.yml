@@ -77,7 +77,7 @@
           msg: "Run 'sudo dnf -y install libguestfs-tools' to install the needed tools"
       - name: "Please wait 10 secs"
         pause:
-          secs: 10
+          seconds: 10
       - name: "installing libguestfs-tools"
         yum:
           name: libguestfs-tools
