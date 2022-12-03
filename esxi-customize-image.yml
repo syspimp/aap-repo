@@ -84,11 +84,18 @@
           state: present
         become: yes
 
+  - name: "Delete custom working custom image"
+    shell: |
+      rm -f /tmp/{{ images[selected_os].input }}.custom
+    args:
+      executable: /bin/bash
+    register: filename
+
   - name: "builder: working from backup of image {{ images[selected_os].input }}"
     ansible.builtin.copy:
       src: "/tmp/{{ images[selected_os].input }}"
       dest: "/tmp/{{ images[selected_os].input }}.custom"
-      backup: yes
+      backup: no
       remote_src: yes
 
   - name: "builder: Copy in the scripts"
