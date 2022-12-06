@@ -162,7 +162,7 @@
 
   - name: "builder: copy to esxi hosts"
     shell: |
-      scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root.ssh/builder /tmp/{{ OUTPUT }}.tmp.vmdk root@{{ item }}:{{ VMWROOT }}/
+      scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/.ssh/builder /tmp/{{ OUTPUT }}.tmp.vmdk root@{{ item }}:{{ VMWROOT }}/
     loop: "{{ ESXIHOSTS }}"
 
   - name: "builder: remove tmp vmdk"
