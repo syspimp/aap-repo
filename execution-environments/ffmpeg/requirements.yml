@@ -1,0 +1,6 @@
+---
+# to install, run ./setup.sh
+# or ansible-galaxy install -r requirements.yml
+collections:
+  - name: community.general
+    source: https://galaxy.ansible.com
