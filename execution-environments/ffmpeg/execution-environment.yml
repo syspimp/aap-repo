@@ -16,6 +16,5 @@ additional_build_steps:
     RUN dnf -y install https://download.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     RUN dnf -y install https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm
     RUN dnf -y install https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-8.noarch.rpm
-    RUN dnf -y install ffmpeg
   append:
     - RUN ls -alhtr 
