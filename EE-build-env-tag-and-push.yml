@@ -7,10 +7,10 @@
     UPSTREAM_REPO: docker.io/syspimp/ansible-ee
     UPSTREAM_TAG: "{{ EE_TYPE }}"
   tasks:
-  - name: "Check for 5 mins if ansible.cfg file exists in playbook dir"
+  - name: "Check for 10 mins if ansible.cfg file exists in playbook dir"
     stat:
       path: "/opt/aap-repo/execution-environments/{{ EE_TYPE }}/ansible.cfg"
-    retries: 5
+    retries: 10
     delay: 60
     until: playconfig.stat.exists == true
     register: playconfig
