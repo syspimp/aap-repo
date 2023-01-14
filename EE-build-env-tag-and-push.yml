@@ -9,12 +9,12 @@
   tasks:
   - name: "Check if image file exists in playbook dir"
     stat:
-      path: "/opt/execution-environments/{{ EE_TYPE }}/ansible.cfg"
+      path: "/opt/aap-repo/execution-environments/{{ EE_TYPE }}/ansible.cfg"
     register: playconfig
 
   - name: "Fail when ansible.cfg not configured"
     ansible.builtin.fail:
-      msg: "You need to read and configure execution-environents/{{ EE_TYPE }}/ansible.cfg"
+      msg: "You need to read and configure /opt/aap-repo/execution-environents/{{ EE_TYPE }}/ansible.cfg"
     when: playconfig.stat.exists == false
 
   - name: "**Building the image" 
@@ -25,13 +25,13 @@
       podman login -u "${subuser}" -p "${subpass}" registry.redhat.io
       ansible-builder build -t {{ TAG }} -v {{ VERBOSE }} {{ USE_CACHE }}
     args:
-      chdir: "/opt/execution-environments/{{ EE_TYPE }}"
+      chdir: "/opt/aap-repo/execution-environments/{{ EE_TYPE }}"
 
   - name:
     shell: |
       podman tag localhost/{{ TAG }} {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
     args:
-      chdir: "/opt/execution-environments/{{ EE_TYPE }}"
+      chdir: "/opt/aap-repo/execution-environments/{{ EE_TYPE }}"
 
   - name: "**Pushing to the cloud..."
     environment:
@@ -41,5 +41,5 @@
       podman login -u "${dockeruser}" -p "${dockerpass}" docker.io
       podman push {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
     args:
-      chdir: "/opt/execution-environments/{{ EE_TYPE }}"
+      chdir: "/opt/app-repo/execution-environments/{{ EE_TYPE }}"
 
