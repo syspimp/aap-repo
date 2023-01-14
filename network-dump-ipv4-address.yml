@@ -1,0 +1,15 @@
+---
+- hosts: all
+  tasks:
+  - name: lookee here
+    debug:
+      var: ansible_facts['ansible_eth0']['ipv4']['address'] 
+  - name: lookee here2
+    debug:
+      var: ansible_facts['eth0']['ipv4']['address'] 
+  - name: lookee here3
+    debug:
+      var: ansible_default_ipv4['address']
+  - name: lookee here4
+    debug:
+      var: ansible_facts.eth0.ipv4.address

@@ -1,6 +1,6 @@
 #!/bin/bash
 # use this to pass the vault secret to ansible navigator
-yoursecret=jgk3pr64
+yoursecret=1234567
 while getopts "d" OPTION
 do
   case "$OPTION" in
