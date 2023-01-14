@@ -44,5 +44,5 @@
       podman login -u "${dockeruser}" -p "${dockerpass}" docker.io
       podman push {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
     args:
-      chdir: "/opt/app-repo/execution-environments/{{ EE_TYPE }}"
+      chdir: "/opt/aap-repo/execution-environments/{{ EE_TYPE }}"
 

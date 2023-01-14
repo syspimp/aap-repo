@@ -1,6 +1,5 @@
 #!/bin/bash
 # use this to pass the vault secret to ansible navigator
-yoursecret=1234567
 while getopts "d" OPTION
 do
   case "$OPTION" in
@@ -19,8 +18,8 @@ main()
     chmod 700 ~/.vault_password.sh
     ln ~/.vault_password.sh .
   fi
-  export ANSIBLE_VAULT_SECRET=${yoursecret}
   export ANSIBLE_VAULT_PASSWORD_FILE=.vault_password.sh
+  echo -e "ALL SET! You need to copy/paste:\n\nexport ANSIBLE_VAULT_SECRET=yourpassword"
 
 }
 
