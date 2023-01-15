@@ -1,10 +1,12 @@
 #!/bin/bash -x
 
-while getopts "d" OPTION
+while getopts "dr" OPTION
 do
   case "$OPTION" in
     # debug
     d) set -x
+    ;;
+    r) rm -rf /var/log/firstboot
     ;;
   esac
 done
