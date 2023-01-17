@@ -13,6 +13,9 @@
     COPYIN:
       - download.sh
       - firstboot.sh
+    OFFLINE_TOKEN: "{{ rhsm_token }}"
+    SUBUSER: "{{ rhsm_username }}"
+    SUBPASS: "{{ rhsm_password }}"
   environment:
     LIBGUESTFS_BACKEND: direct
   tasks:
