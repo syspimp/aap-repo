@@ -40,6 +40,29 @@ main()
     sleep 10
   done
 
+  # wait until vmtoolsd returns a role
+  while [[ "XX${newrole}XX" != "XXXX" ]]
+  do
+    newrole=$(/usr/bin/vmware-rpctool "info-get guestinfo.role")
+    sleep 10
+  done
+
+  # wait until vmtoolsd returns a secondary role
+  while [[ "XX${newsecrole}XX" != "XXXX" ]]
+  do
+    newsecrole=$(/usr/bin/vmware-rpctool "info-get guestinfo.secondaryrole")
+    sleep 10
+  done
+
+  # standardize our fact variable
+  mkdir -p  /etc/ansible/facts.d
+  cat > /etc/ansible/facts.d/roles.fact <<EOF
+[default]
+role=${newrole}
+[secondaryrole]
+role=${newsecrole}
+EOF
+
   # wait until tower/aws returns a success message
   while [[ ! -e /var/log/firstboot/.success ]]
   do
