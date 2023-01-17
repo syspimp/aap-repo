@@ -72,6 +72,7 @@
       - name: "Set the host_id fact"
         set_fact:
           host_id: "{{ hostidcheck.json.results[0].id }}"
+        when: hostidcheck.json.results[0] is defined
 
       - name: "Remove host from the Inventory"
         uri:
@@ -84,6 +85,7 @@
           status_code: [201,202,204]
           body_format: json
         delegate_to: localhost
+        when: host_id is defined
 
     rescue:
     - name: "[esxi_host] inventory"
