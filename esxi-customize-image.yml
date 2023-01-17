@@ -113,24 +113,24 @@
 
   - name: "builder: remove old vmdk if it exists"
     file:
-      path: "/tmp/{{ OUTPUT }}.tmp.vmdk"
+      path: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
       state: absent
 
   - name: "builder: setting the root password"
     shell: |
-      virt-customize -a /tmp/{{ INPUT }}.custom --root-password password:{{ ROOTPASS }}
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --root-password password:{{ ROOTPASS }}
 
   - name: "builder: customizing hostname"
     shell: |
-      virt-customize -a /tmp/{{ INPUT }}.custom --hostname {{ OUTPUT }}
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --hostname {{ images[selected_os].output }}
 
   - name: "builder: injecting ssh key"
     shell: |
-      virt-customize -a /tmp/{{ INPUT }}.custom --ssh-inject root:file:/tmp/{{ SSHPUBKEY }}
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --ssh-inject root:file:/tmp/{{ SSHPUBKEY }}
 
   - name: "builder: registering and subscribing, change to use satellite here"
     shell: |
-      virt-customize -v -x -a /tmp/{{ INPUT }}.custom --run-command "subscription-manager register \
+      virt-customize -v -x -a /tmp/{{ images[selected_os].input }}.custom --run-command "subscription-manager register \
         --username={{ SUBUSER }} \
         --password='{{ SUBPASS }}' \
         --auto-attach \
@@ -138,35 +138,35 @@
 
   - name: "builder: customizing add base"
     shell: |
-      virt-customize -a /tmp/{{ INPUT }}.custom --run-command "yum -y install {{ item }}"
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "yum -y install {{ item }}"
     loop: "{{ REQUIREDRPMS }}"
     ignore_errors: yes
 
   - name: "builder: adding scripts to /root"
     shell: |
-      virt-customize -a /tmp/{{ INPUT }}.custom --copy-in /tmp/{{ item }}:/root
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --copy-in /tmp/{{ item }}:/root
     loop: "{{ COPYIN }}"
 
   - name: "builder: adding growdisk script to firstboot"
     shell: |
-      virt-customize -a /tmp/{{ INPUT }}.custom --firstboot /tmp/firstboot.sh
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --firstboot /tmp/firstboot.sh
 
   - name: "builder: tell selinux to relabel next boot"
     shell: |
-      virt-customize -a /tmp/{{ INPUT }}.custom --run-command "touch /.autorelabel"
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "touch /.autorelabel"
 
   - name: "builder: running qemu-convert to vmdk"
     shell: |
-      qemu-img convert /tmp/{{ INPUT }}.custom -O vmdk -o adapter_type=lsilogic,subformat=streamOptimized,compat6 /tmp/{{ OUTPUT }}.tmp.vmdk -p
+      qemu-img convert /tmp/{{ images[selected_os].input }}.custom -O vmdk -o adapter_type=lsilogic,subformat=streamOptimized,compat6 /tmp/{{ images[selected_os].output }}.tmp.vmdk -p
     become: yes
 
   - name: "builder: copy to esxi hosts"
     shell: |
-      scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/.ssh/builder /tmp/{{ OUTPUT }}.tmp.vmdk root@{{ item }}:{{ VMWROOT }}/
+      scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/.ssh/builder /tmp/{{ images[selected_os].output }}.tmp.vmdk root@{{ item }}:{{ VMWROOT }}/
     loop: "{{ ESXIHOSTS }}"
 
   - name: "builder: remove tmp vmdk"
     file:
-      path: "/tmp/{{ OUTPUT }}.tmp.vmdk"
+      path: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
       state: absent
 

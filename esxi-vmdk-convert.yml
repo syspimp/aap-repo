@@ -10,16 +10,16 @@
 
   - name: "esxi_host: create directory to hold new vmdk"
     file:
-      path: "{{ VMWROOT }}/{{ OUTPUT }}"
+      path: "{{ VMWROOT }}/{{ images[selected_os].output }}"
       state: directory
 
   - name: "esxi_host: running vmkfstools to create new vmdk in directory"
     shell: |
-      rm -f {{ VMWROOT }}/{{ OUTPUT }}/*
-      vmkfstools -i {{ VMWROOT }}/{{ OUTPUT }}.tmp.vmdk  -d thin {{ VMWROOT }}/{{ OUTPUT }}/{{ OUTPUT }}.vmdk
+      rm -f {{ VMWROOT }}/{{ images[selected_os].output }}/*
+      vmkfstools -i {{ VMWROOT }}/{{ images[selected_os].output }}.tmp.vmdk  -d thin {{ VMWROOT }}/{{ images[selected_os].output }}/{{ images[selected_os].output }}.vmdk
 
   always:
   - name: "esxi_host: cleaning up and removing tmp vmdk"
     file:
-      path: "{{ VMWROOT }}/{{ OUTPUT }}.tmp.vmdk"
+      path: "{{ VMWROOT }}/{{ images[selected_os].output }}.tmp.vmdk"
       state: absent
