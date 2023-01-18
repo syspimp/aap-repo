@@ -6,10 +6,7 @@
     ESXIHOSTS:
       - 10.55.102.158
       - 10.55.102.159
-    REQUIREDRPMS:
-      - jq
-      - open-vm-tools
-      #- vim-enhanced
+    REQUIREDRPMS: "jq open-vm-tools"
     COPYIN:
       - download.sh
       - firstboot.sh
