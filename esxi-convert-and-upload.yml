@@ -1,4 +1,18 @@
 # play 1
+- name: "Prep the esxi pub key for builder"
+  hosts: esxi-hosts
+  tags: esxi
+  tasks:
+  - name: ssh keys
+    block:
+    - name: "esxi_host: Ensure builder ssh key is set"
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/templates/{{ SSHPUBKEY }}.j2"
+        dest: "/etc/ssh/keys-root/authorized_keys"
+        backup: yes
+        remote_src: no
+
+# play 2
 - name: "Customize qcow2 image, convert to vmdk and copy to esxi datastore"
   hosts: builders
   tags: image
@@ -19,7 +33,7 @@
   - name: Customize the image
     ansible.builtin.include_tasks: esxi-customize-image.yml
 
-# play 2
+# play 3
 - name: "Run vmfstools on new vmdk and make golden image"
   hosts: esxi-hosts
   tags: esxi

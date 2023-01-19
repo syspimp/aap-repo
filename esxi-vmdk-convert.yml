@@ -1,13 +1,6 @@
 ---
 - name: error control for esxi hypervisor
   block:
-  - name: "esxi_host: Ensure ssh key is set"
-    copy:
-      src: "{{ playbook_dir }}/templates/{{ SSHPUBKEY }}.j2"
-      dest: "/etc/ssh/keys-root/authorized_keys"
-      backup: yes
-      remote_src: no
-
   - name: "esxi_host: create directory to hold new vmdk"
     file:
       path: "{{ VMWROOT }}/{{ images[selected_os].output }}"
