@@ -70,6 +70,7 @@
             datacenter: "{{ datacenter_name }}"
             validate_certs: no
             #name: "{{ NEWVM }}"
+            use_instance_uuid: true
             uuid: "{{ deploy.instance.instance_uuid }}"
             folder: "/{{ datacenter_name }}/vm/"
             disk:
