@@ -62,25 +62,6 @@
         - name: "[esxi_host] what that mouth do?"
           debug: var=deploy
 
-        - name: "[esxi_host] Power off virtual machine"
-          community.vmware.vmware_guest:
-            hostname: "{{ ESXIHOST }}"
-            username: "{{ VCENTER_USER }}"
-            password: "{{ ROOTPASS }}"
-            validate_certs: no
-            name: "{{ NEWVM }}"
-            state: poweredoff
-          delegate_to: localhost
-          register: deploy
-
-        - name: "[esxi_host] Let's wait 15 seconds"
-          pause:
-            seconds: 15
-
-        - name: "[esxi_host] add some parameters to the vmx file on the hypervisor for the hostname"
-          shell: |
-            echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"\nguestinfo.role = \"{{ ROLE }}\"\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
-
         - name: "Expand disks for virtual machine using uuid"
           community.vmware.vmware_guest_disk:
             hostname: "{{ ESXIHOST }}"
@@ -102,6 +83,25 @@
                 #disk_mode: "paravirtual"
           delegate_to: localhost
           register: deploy
+
+        - name: "[esxi_host] Power off virtual machine"
+          community.vmware.vmware_guest:
+            hostname: "{{ ESXIHOST }}"
+            username: "{{ VCENTER_USER }}"
+            password: "{{ ROOTPASS }}"
+            validate_certs: no
+            name: "{{ NEWVM }}"
+            state: poweredoff
+          delegate_to: localhost
+          register: deploy
+
+        - name: "[esxi_host] Let's wait 15 seconds"
+          pause:
+            seconds: 15
+
+        - name: "[esxi_host] add some parameters to the vmx file on the hypervisor for the hostname"
+          shell: |
+            echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"\nguestinfo.role = \"{{ ROLE }}\"\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
 
         - name: "[esxi_host] Power on virtual machine"
           community.vmware.vmware_guest:
