@@ -11,200 +11,200 @@
           cp -R "{{ VMWROOT }}/{{ OUTPUT }}" "{{ VMWROOT }}/{{ NEWVM }}"
         fi
 
-  - name: "[esxi_host] Error control for vmware_guest tasks"
-    block:
-      - name: "[esxi_host] Create a virtual machine and attach golden vmdk"
-        community.vmware.vmware_guest:
-          hostname: "{{ ESXIHOST }}"
-          username: "{{ VCENTER_USER }}"
-          password: "{{ ROOTPASS }}"
-          validate_certs: no
-          folder: "/ha-datacenter/vm/"
-          name: "{{ NEWVM }}"
-          state: poweredon
-          guest_id: rhel7_64Guest
-          # Add another disk from an existing VMDK
-          disk:
-          - filename: "[datastore1] {{ NEWVM }}/{{ OUTPUT }}.vmdk"
-            datastore: "datastore1"
-            size_gb: "{{ VMDISKSIZE }}"
-          hardware:
-            memory_mb: "{{ VMMEM }}"
-            num_cpus: "{{ VMCPUS }}"
-            num_cpu_cores_per_socket: 2
-            scsi: paravirtual
-            memory_reservation_lock: True
-            mem_limit: 8096
-            mem_reservation: 4096
-            cpu_limit: 8096
-            cpu_reservation: 4096
-            max_connections: 5
-            hotadd_cpu: True
-            hotremove_cpu: True
-            hotadd_memory: False
-            version: 12 # Hardware version of virtual machine
-            boot_firmware: "efi"
-          networks:
-          - name: VM Network
-            #mac: aa:bb:dd:aa:00:14
-          customization:
-            hostname: "{{ NEWVM }}"
-          # would be nice if this worked
-          #customvalues:
-          #- key: "guestinfo.hostname"
-          #  value: "{{ NEWVM }}"
-          #- key: "guestinfo.role"
-          #  value: "{{ ROLE }}"
-          wait_for_ip_address: false
-        delegate_to: localhost
-        register: deploy
-
-      - name: "[esxi_host] what that mouth do?"
-        debug: var=deploy
-
-      - name: "[esxi_host] Power off virtual machine"
-        community.vmware.vmware_guest:
-          hostname: "{{ ESXIHOST }}"
-          username: "{{ VCENTER_USER }}"
-          password: "{{ ROOTPASS }}"
-          validate_certs: no
-          name: "{{ NEWVM }}"
-          state: poweredoff
-        delegate_to: localhost
-        register: deploy
-
-      - name: "[esxi_host] Let's wait 15 seconds"
-        pause:
-          seconds: 15
-
-      - name: "[esxi_host] add some parameters to the vmx file on the hypervisor for the hostname"
-        shell: |
-          echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"\nguestinfo.role = \"{{ ROLE }}\"\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
-
-      - name: "Expand disks for virtual machine using uuid"
-        community.vmware.vmware_guest_disk:
-          hostname: "{{ ESXIHOST }}"
-          username: "{{ VCENTER_USER }}"
-          password: "{{ ROOTPASS }}"
-          datacenter: "{{ datacenter_name }}"
-          validate_certs: no
-          #name: "{{ NEWVM }}"
-          uuid: "{{ deploy.instance.instance_uuid }}"
-          folder: "/{{ datacenter_name }}/vm/"
-          disk:
-            - size_gb: "{{ VMDISKSIZE }}"
-              type: "thin"
+    - name: "[esxi_host] Error control for vmware_guest tasks"
+      block:
+        - name: "[esxi_host] Create a virtual machine and attach golden vmdk"
+          community.vmware.vmware_guest:
+            hostname: "{{ ESXIHOST }}"
+            username: "{{ VCENTER_USER }}"
+            password: "{{ ROOTPASS }}"
+            validate_certs: no
+            folder: "/ha-datacenter/vm/"
+            name: "{{ NEWVM }}"
+            state: poweredon
+            guest_id: rhel7_64Guest
+            # Add another disk from an existing VMDK
+            disk:
+            - filename: "[datastore1] {{ NEWVM }}/{{ OUTPUT }}.vmdk"
               datastore: "datastore1"
-              state: present
-              scsi_controller: "1"
-              unit_number: "1"
-              scsi_type: "paravirtual"
-              disk_mode: "paravirtual"
-        delegate_to: localhost
-        register: disk_facts
+              size_gb: "{{ VMDISKSIZE }}"
+            hardware:
+              memory_mb: "{{ VMMEM }}"
+              num_cpus: "{{ VMCPUS }}"
+              num_cpu_cores_per_socket: 2
+              scsi: paravirtual
+              memory_reservation_lock: True
+              mem_limit: 8096
+              mem_reservation: 4096
+              cpu_limit: 8096
+              cpu_reservation: 4096
+              max_connections: 5
+              hotadd_cpu: True
+              hotremove_cpu: True
+              hotadd_memory: False
+              version: 12 # Hardware version of virtual machine
+              boot_firmware: "efi"
+            networks:
+            - name: VM Network
+              #mac: aa:bb:dd:aa:00:14
+            customization:
+              hostname: "{{ NEWVM }}"
+            # would be nice if this worked
+            #customvalues:
+            #- key: "guestinfo.hostname"
+            #  value: "{{ NEWVM }}"
+            #- key: "guestinfo.role"
+            #  value: "{{ ROLE }}"
+            wait_for_ip_address: false
+          delegate_to: localhost
+          register: deploy
 
-      - name: "[esxi_host] Power on virtual machine"
-        community.vmware.vmware_guest:
-          hostname: "{{ ESXIHOST }}"
-          username: "{{ VCENTER_USER }}"
-          password: "{{ ROOTPASS }}"
-          validate_certs: no
-          name: "{{ NEWVM }}"
-          state: poweredon
-        delegate_to: localhost
-        register: deploy
-        retries: 3
+        - name: "[esxi_host] what that mouth do?"
+          debug: var=deploy
 
-      - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to vmware"
-        pause:
-          minutes: 1
+        - name: "[esxi_host] Power off virtual machine"
+          community.vmware.vmware_guest:
+            hostname: "{{ ESXIHOST }}"
+            username: "{{ VCENTER_USER }}"
+            password: "{{ ROOTPASS }}"
+            validate_certs: no
+            name: "{{ NEWVM }}"
+            state: poweredoff
+          delegate_to: localhost
+          register: deploy
 
-      - name: "[esxi_host] Update the ESXI Inventory"
-        ignore_errors: yes
-        uri:
-          url: https://{{ tower.server }}/api/v2/inventory_sources/{{ item }}/update/
-          validate_certs: no
-          method: POST
-          user: "{{ tower.user }}"
-          password: "{{ tower.pass }}"
-          force_basic_auth: yes
-          status_code: [201,202]
-          body_format: json
-        with_items:
-          - "{{ tower.esxi_inventory_ids }}"
-        delegate_to: localhost
+        - name: "[esxi_host] Let's wait 15 seconds"
+          pause:
+            seconds: 15
 
-      - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to ansible platform"
-        pause:
-          minutes: 1
+        - name: "[esxi_host] add some parameters to the vmx file on the hypervisor for the hostname"
+          shell: |
+            echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"\nguestinfo.role = \"{{ ROLE }}\"\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
 
-    rescue:
-      - name: "[esxi_host] Failure Full Dump"
-        debug:
-          var: deploy
-        when: deploy is defined
+        - name: "Expand disks for virtual machine using uuid"
+          community.vmware.vmware_guest_disk:
+            hostname: "{{ ESXIHOST }}"
+            username: "{{ VCENTER_USER }}"
+            password: "{{ ROOTPASS }}"
+            datacenter: "{{ datacenter_name }}"
+            validate_certs: no
+            #name: "{{ NEWVM }}"
+            uuid: "{{ deploy.instance.instance_uuid }}"
+            folder: "/{{ datacenter_name }}/vm/"
+            disk:
+              - size_gb: "{{ VMDISKSIZE }}"
+                type: "thin"
+                datastore: "datastore1"
+                state: present
+                scsi_controller: "1"
+                unit_number: "1"
+                scsi_type: "paravirtual"
+                disk_mode: "paravirtual"
+          delegate_to: localhost
+          register: disk_facts
 
-      - name: "[esxi_host] Failure Msg"
-        debug:
-          var: deploy.msg
-        when: deploy.msg is defined
+        - name: "[esxi_host] Power on virtual machine"
+          community.vmware.vmware_guest:
+            hostname: "{{ ESXIHOST }}"
+            username: "{{ VCENTER_USER }}"
+            password: "{{ ROOTPASS }}"
+            validate_certs: no
+            name: "{{ NEWVM }}"
+            state: poweredon
+          delegate_to: localhost
+          register: deploy
+          retries: 3
 
-  - name: "Block add to Ansible Tower inventory"
-    block:
-      - name: "Get host id to add to the 'esxi-vms' Group Inventory"
-        uri:
-          url: "https://{{ tower.server }}/api/v2/hosts/?name={{ deploy.instance.hw_name + '_' + deploy.instance.hw_product_uuid }}"
-          validate_certs: no
-          method: GET
-          user: "{{ tower.user }}"
-          password: "{{ tower.pass }}"
-          force_basic_auth: yes
-          status_code: [200,202,204]
-          body_format: json
-        register: hostidcheck
-        delegate_to: localhost
+        - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to vmware"
+          pause:
+            minutes: 1
 
-      - name: "Set the host_id fact"
-        set_fact:
-          host_id: "{{ hostidcheck.json.results[0].id }}"
+        - name: "[esxi_host] Update the ESXI Inventory"
+          ignore_errors: yes
+          uri:
+            url: https://{{ tower.server }}/api/v2/inventory_sources/{{ item }}/update/
+            validate_certs: no
+            method: POST
+            user: "{{ tower.user }}"
+            password: "{{ tower.pass }}"
+            force_basic_auth: yes
+            status_code: [201,202]
+            body_format: json
+          with_items:
+            - "{{ tower.esxi_inventory_ids }}"
+          delegate_to: localhost
 
-      - name: "Find Group Inventory for 'esxi-vms'"
-        uri:
-          url: "https://{{ tower.server }}/api/v2/groups/?search=esxi-vms"
-          validate_certs: no
-          method: GET
-          user: "{{ tower.user }}"
-          password: "{{ tower.pass }}"
-          force_basic_auth: yes
-          status_code: [200,202,204]
-          body_format: json
-        register: groupidcheck
-        delegate_to: localhost
+        - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to ansible platform"
+          pause:
+            minutes: 1
 
-      - name: "Set the group_id fact"
-        set_fact:
-          group_id: "{{ groupidcheck.json.results[0].id }}"
-    
+      rescue:
+        - name: "[esxi_host] Failure Full Dump"
+          debug:
+            var: deploy
+          when: deploy is defined
 
-      - name: "Add host to the 'esxi-vms' Group Inventory"
-        uri:
-          url: "https://{{ tower.server }}/api/v2/groups/{{ group_id }}/hosts/"
-          validate_certs: no
-          method: POST
-          body: >
-            {
-               "id": {{ host_id }}
-            }
-          user: "{{ tower.user }}"
-          password: "{{ tower.pass }}"
-          force_basic_auth: yes
-          status_code: [201,202,204]
-          body_format: json
-        delegate_to: localhost
+        - name: "[esxi_host] Failure Msg"
+          debug:
+            var: deploy.msg
+          when: deploy.msg is defined
 
-    rescue:
-      - name: "[esxi_host] inventory"
-        debug:
-          msg: "well, coulnd't talk to the tower server"
+    - name: "Block add to Ansible Tower inventory"
+      block:
+        - name: "Get host id to add to the 'esxi-vms' Group Inventory"
+          uri:
+            url: "https://{{ tower.server }}/api/v2/hosts/?name={{ deploy.instance.hw_name + '_' + deploy.instance.hw_product_uuid }}"
+            validate_certs: no
+            method: GET
+            user: "{{ tower.user }}"
+            password: "{{ tower.pass }}"
+            force_basic_auth: yes
+            status_code: [200,202,204]
+            body_format: json
+          register: hostidcheck
+          delegate_to: localhost
+
+        - name: "Set the host_id fact"
+          set_fact:
+            host_id: "{{ hostidcheck.json.results[0].id }}"
+
+        - name: "Find Group Inventory for 'esxi-vms'"
+          uri:
+            url: "https://{{ tower.server }}/api/v2/groups/?search=esxi-vms"
+            validate_certs: no
+            method: GET
+            user: "{{ tower.user }}"
+            password: "{{ tower.pass }}"
+            force_basic_auth: yes
+            status_code: [200,202,204]
+            body_format: json
+          register: groupidcheck
+          delegate_to: localhost
+
+        - name: "Set the group_id fact"
+          set_fact:
+            group_id: "{{ groupidcheck.json.results[0].id }}"
+      
+
+        - name: "Add host to the 'esxi-vms' Group Inventory"
+          uri:
+            url: "https://{{ tower.server }}/api/v2/groups/{{ group_id }}/hosts/"
+            validate_certs: no
+            method: POST
+            body: >
+              {
+                 "id": {{ host_id }}
+              }
+            user: "{{ tower.user }}"
+            password: "{{ tower.pass }}"
+            force_basic_auth: yes
+            status_code: [201,202,204]
+            body_format: json
+          delegate_to: localhost
+
+      rescue:
+        - name: "[esxi_host] inventory"
+          debug:
+            msg: "well, coulnd't talk to the tower server"
 
 
