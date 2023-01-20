@@ -93,15 +93,15 @@
             folder: "/{{ datacenter_name }}/vm/"
             disk:
               - size_gb: "{{ VMDISKSIZE }}"
-                type: "thin"
+                #type: "thin"
                 datastore: "datastore1"
                 state: present
                 scsi_controller: "1"
                 unit_number: "1"
-                scsi_type: "paravirtual"
-                disk_mode: "paravirtual"
+                #scsi_type: "paravirtual"
+                #disk_mode: "paravirtual"
           delegate_to: localhost
-          register: disk_facts
+          register: deploy
 
         - name: "[esxi_host] Power on virtual machine"
           community.vmware.vmware_guest:
