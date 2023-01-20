@@ -34,21 +34,21 @@ main()
 
   newhostname=""
   # wait until vmtoolsd returns a hostname
-  while [[ "XX${newhostname}XX" != "XXXX" ]]
+  while [[ "XX${newhostname}XX" == "XXXX" ]]
   do
     newhostname=$(/usr/bin/vmware-rpctool "info-get guestinfo.hostname")
     sleep 10
   done
 
   # wait until vmtoolsd returns a role
-  while [[ "XX${newrole}XX" != "XXXX" ]]
+  while [[ "XX${newrole}XX" == "XXXX" ]]
   do
     newrole=$(/usr/bin/vmware-rpctool "info-get guestinfo.role")
     sleep 10
   done
 
   # wait until vmtoolsd returns a secondary role
-  while [[ "XX${newsecrole}XX" != "XXXX" ]]
+  while [[ "XX${newsecrole}XX" == "XXXX" ]]
   do
     newsecrole=$(/usr/bin/vmware-rpctool "info-get guestinfo.secondaryrole")
     sleep 10
