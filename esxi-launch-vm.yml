@@ -78,8 +78,8 @@
                 #type: "thin"
                 datastore: "datastore1"
                 state: present
-                scsi_controller: "1"
-                unit_number: "1"
+                scsi_controller: "0"
+                unit_number: "0"
                 #scsi_type: "paravirtual"
                 #disk_mode: "paravirtual"
           delegate_to: localhost
