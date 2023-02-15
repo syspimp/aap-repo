@@ -11,6 +11,8 @@ dependencies:
   system: bindep.txt
 additional_build_steps:
   prepend: |
+    ENV PIPENV_INSTALL_TIMEOUT=9999
+    ENV PIPENV_TIMEOUT=999
     RUN pip3 install --upgrade pip setuptools
   append:
     - RUN ls -alhtr 
