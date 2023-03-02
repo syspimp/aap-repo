@@ -1,0 +1,18 @@
+---
+- hosts: all
+  tasks:
+  - name: "logging in as root"
+    shell: "echo hi"
+
+  - name: Add the user 'ansiblesvc'
+    user:
+      name: ansiblesvc
+      comment: "Build for Automation"
+      group: wheel
+
+  - name: Set authorized key taken from file
+    ansible.posix.authorized_key:
+      user: ansiblesvc
+      state: present
+      key: "{{ lookup('file', '/home/dataylor/ansiblesvc.pub') }}"
+
