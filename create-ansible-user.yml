@@ -1,5 +1,9 @@
 ---
 - hosts: all
+  vars:
+    # lookup file or paste the pub key here
+    public_key: lookup('file', '/home/dataylor/ansiblesvc.pub')
+    #public_key: "ssh-rsa AAAAB3Nz ...blah... 03Ug30uAv8= you@there.com"
   tasks:
   - name: "logging in as root"
     shell: "echo hi"
@@ -14,5 +18,5 @@
     ansible.posix.authorized_key:
       user: ansiblesvc
       state: present
-      key: "{{ lookup('file', '/home/dataylor/ansiblesvc.pub') }}"
+      key: "{{ public_key }}"
 
