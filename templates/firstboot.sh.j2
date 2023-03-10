@@ -26,6 +26,58 @@ main()
 
   mkdir -p /var/log/firstboot
 
+  # ubuntu networking
+  if [[ -e /etc/os-release ]]
+  then
+    if [[ ! -e /etc/netplan/99_config.yaml ]]
+    then
+      echo >/etc/netplan/99_config.yaml<<EOF
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens192:
+      dhcp4: true
+EOF
+    fi
+    netplan apply
+    ip link dev ens192 up
+    sleep 5
+    apt-get install -y openssh-release open-vm-tools jq
+    ssh-keygen -A
+    systemctl enable ssh
+    ufw allow ssh
+    systemctl start ssh
+  fi
+  # rhel networking
+  if [[ -e /etc/redhat-release ]]
+  then
+    grep DNS /etc/sysconfig/network-scripts/ifcfg-eth0 > /dev/null 2>&1
+    if [[ $? -ne 0 ]]
+    then
+      echo "DNS1=10.55.102.5" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+      echo "DNS2=10.55.110.1" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+    fi
+    systemctl daemon-reload
+    nmcli con load /etc/sysconfig/network-scripts/ifcfg-eth0
+    systemctl restart NetworkManager
+    dnf install -y jq open-vm-tools
+  fi
+  # fedora networking
+  if [[ -e /etc/redhat-release ]]
+  then
+    grep DNS /etc/sysconfig/network-scripts/ifcfg-eth0 > /dev/null 2>&1
+    if [[ $? -ne 0 ]]
+    then
+      echo "DNS1=10.55.102.5" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+      echo "DNS2=10.55.110.1" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+    fi
+    systemctl daemon-reload
+    nmcli con load /etc/sysconfig/network-scripts/ifcfg-eth0
+    systemctl restart NetworkManager
+    dnf install -y jq open-vm-tools
+  fi
+
   # wait for the network to wake up
   while ! ping -c 1 -W 2 8.8.8.8 > /dev/null
   do
