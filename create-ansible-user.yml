@@ -1,29 +1,28 @@
 ---
 - hosts: all
   vars:
-    # lookup file or paste the pub key here
+    username: ansiblesvc
+    groups: "wheel,{{ username }}"
+    # provide path to a public keyfile or paste in the pub key
     public_key: lookup('file', '/home/dataylor/ansiblesvc.pub')
     #public_key: "ssh-rsa AAAAB3Nz ...blah... 03Ug30uAv8= you@there.com"
   tasks:
-  - name: "logging in as root"
-    shell: "echo hi"
-
-  - name: Add the user 'ansiblesvc'
+  - name: "Add the automation user '{{ username }}'"
     user:
-      name: ansiblesvc
-      comment: "Build for Automation"
-      group: wheel
+      name: "{{ username }}"
+      comment: "Built By Ansible Automation"
+      group: "{{ groups }}"
 
   - name: Set authorized key taken from file
     ansible.posix.authorized_key:
-      user: ansiblesvc
+      user: "{{ username }}"
       state: present
       key: "{{ public_key }}"
 
   - name:
     template:
-      src: ansiblesvc.j2
-      dest: /etc/sudoers.d/ansiblesvc
+      src: "{{ username }}.j2"
+      dest: "/etc/sudoers.d/{{ username }}"
       owner: root
       group: root
       mode: '0440'

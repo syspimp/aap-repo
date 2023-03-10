@@ -31,7 +31,7 @@
     LIBGUESTFS_BACKEND: direct
   tasks:
   - name: Customize the image
-    ansible.builtin.include_tasks: esxi-customize-image.yml
+    ansible.builtin.include_tasks: "esxi-customize-{{ osflavor }}-image.yml"
 
 # play 3
 - name: "Run vmfstools on new vmdk and make golden image"

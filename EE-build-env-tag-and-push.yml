@@ -30,7 +30,7 @@
     args:
       chdir: "/opt/aap-repo/execution-environments/{{ EE_TYPE }}"
 
-  - name:
+  - name: "**tagging the container image"
     shell: |
       podman tag localhost/{{ TAG }} {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
     args:

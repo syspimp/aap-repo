@@ -1,0 +1,171 @@
+  - name: grab the access token
+    shell: |
+      curl -s https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token \
+      -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq -r '.access_token'
+    register: access_token
+      
+  - name: create the filename
+    shell: |
+      curl -H "Authorization: Bearer {{ access_token.stdout }}" "https://api.access.redhat.com/management/v1/images/{{ images[selected_os].chksum }}/download"
+    register: imageraw
+
+#  - name: create the filename by script
+#    set_fact: |
+#      filename: "{{ imageraw.stdout | community.general.json_query('filename') }}"
+#
+#  - name: get the url
+#    set_fact: |
+#      url: "{{ imageraw.stdout | community.general.json_query('href') }}"
+      
+  - name: create the filename by script
+    shell: |
+      echo {{ imageraw.stdout | to_json }} | jq -r '.body.filename'
+    args:
+      executable: /bin/bash
+    register: filename
+
+  - name: "Check if image file exists in playbook dir"
+    stat:
+      path: "{{ playbook_dir }}/{{ filename.stdout }}"
+    register: playimage
+
+  - name: "save {{ filename.stdout }} to environment"
+    ansible.builtin.copy:
+      src: "{{ playbook_dir }}/{{ filename.stdout }}"
+      dest: "/tmp/{{ filename.stdout }}"
+      owner: root
+      group: root
+      mode: '0644'
+    when: playimage.stat.exists == true
+
+  - name: "Check if image file exists at target now"
+    stat:
+      path: "/tmp/{{ filename.stdout }}"
+    register: diskimage
+
+  - name: wrapper for download
+    block:
+    - name: get the url
+      shell: |
+        echo {{ imageraw.stdout | to_json }} | jq -r '.body.href'
+      args:
+        executable: /bin/bash
+      register: url
+
+    - name: "save {{ filename.stdout }} to disk"
+      uri:
+        url: "{{ url.stdout }}"
+        method: GET
+        dest: "/tmp/{{ filename.stdout }}"
+        status_code: [304,200]
+        headers:
+          Authorization: "Bearer {{ access_token.stdout }}"
+    when: diskimage.stat.exists == false
+
+    rescue:
+    - name: "Download Block Wrapper completed"
+      debug: msg="Well that didn't work"
+
+  - name: "preflight checks"
+    block:
+    - name: "[preflight] check if libguestfs-tools is installed"
+      shell: rpm -qa | grep libguestfs-tools
+
+    rescue:
+      - name: "You need to install thelibguestfs-tools rpm. Ctrl-C to stop, or wait to continue"
+        debug:
+          msg: "Run 'sudo dnf -y install libguestfs-tools' to install the needed tools"
+      - name: "Please wait 10 secs"
+        pause:
+          seconds: 10
+      - name: "installing libguestfs-tools"
+        yum:
+          name: libguestfs-tools
+          state: present
+        become: yes
+
+  - name: "Delete custom working custom image"
+    shell: |
+      rm -f /tmp/{{ images[selected_os].input }}.custom
+    args:
+      executable: /bin/bash
+    register: filename
+
+  - name: "builder: working from backup of image {{ images[selected_os].input }}"
+    ansible.builtin.copy:
+      src: "/tmp/{{ images[selected_os].input }}"
+      dest: "/tmp/{{ images[selected_os].input }}.custom"
+      backup: no
+      remote_src: yes
+
+  - name: "builder: Copy in the scripts"
+    ansible.builtin.template:
+      src: "{{ item }}.j2"
+      dest: "/tmp/{{ item }}"
+      owner: root
+      group: root
+      mode: '0744'
+    become: yes
+    loop:
+      - download.sh
+      - firstboot.sh
+      - "{{ SSHPUBKEY }}"
+
+  - name: "builder: remove old vmdk if it exists"
+    file:
+      path: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
+      state: absent
+
+  - name: "builder: setting the root password"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --root-password password:{{ ROOTPASS }}
+
+  - name: "builder: customizing hostname"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --hostname {{ images[selected_os].output }}
+
+  - name: "builder: injecting ssh key"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --ssh-inject root:file:/tmp/{{ SSHPUBKEY }}
+
+  - name: "builder: registering and subscribing, change to use satellite here"
+    shell: |
+      virt-customize -v -x -a /tmp/{{ images[selected_os].input }}.custom --run-command "subscription-manager register \
+        --username={{ SUBUSER }} \
+        --password='{{ SUBPASS }}' \
+        --auto-attach \
+        --force"
+
+  - name: "builder: customizing add base"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "yum -y install {{ REQUIREDRPMS }}"
+    ignore_errors: yes
+
+  - name: "builder: adding scripts to /root"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --copy-in /tmp/{{ item }}:/root
+    loop: "{{ COPYIN }}"
+
+  - name: "builder: adding growdisk script to firstboot"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --firstboot /tmp/firstboot.sh
+
+  - name: "builder: tell selinux to relabel next boot"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "touch /.autorelabel"
+
+  - name: "builder: running qemu-convert to vmdk"
+    shell: |
+      qemu-img convert /tmp/{{ images[selected_os].input }}.custom -O vmdk -o adapter_type=lsilogic,subformat=streamOptimized,compat6 /tmp/{{ images[selected_os].output }}.tmp.vmdk -p
+    become: yes
+
+  - name: "builder: copy to esxi hosts"
+    shell: |
+      scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/.ssh/builder /tmp/{{ images[selected_os].output }}.tmp.vmdk root@{{ item }}:{{ VMWROOT }}/
+    loop: "{{ ESXIHOSTS }}"
+
+  - name: "builder: remove tmp vmdk"
+    file:
+      path: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
+      state: absent
+
