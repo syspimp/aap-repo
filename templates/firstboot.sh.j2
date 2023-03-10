@@ -31,7 +31,7 @@ main()
   then
     if [[ ! -e /etc/netplan/99_config.yaml ]]
     then
-      echo >/etc/netplan/99_config.yaml<<EOF
+      cat >/etc/netplan/99_config.yaml<<EOF
 network:
   version: 2
   renderer: networkd
@@ -40,8 +40,9 @@ network:
       dhcp4: true
 EOF
     fi
+    sleep 2
     netplan apply
-    ip link dev ens192 up
+    ip link set dev ens192 up
     sleep 5
     apt-get install -y openssh-release open-vm-tools jq
     ssh-keygen -A
