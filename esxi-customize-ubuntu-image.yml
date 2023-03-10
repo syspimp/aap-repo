@@ -104,6 +104,11 @@
     shell: |
       virt-customize -a /tmp/{{ images[selected_os].input }}.custom --firstboot /tmp/firstboot.sh
 
+  - name: "builder: customizing add base"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "apt-get install -y open-vm-tools"
+    ignore_errors: yes
+
   - name: "builder: tell selinux to relabel next boot"
     shell: |
       virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "touch /.autorelabel"
