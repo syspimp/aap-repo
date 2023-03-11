@@ -5,6 +5,7 @@
     #account_file: '/home/dataylor/Downloads/redhat-lab-311219-dc8b788a39f8.json'
     #account_file: '/home/dataylor/Downloads/redhat-lab-311219-18edacc3b415.json'
     gcp_image_name: rhel7.9_golden_image
+    selected_os: rhel79
     disk_to_upload: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
     gcp_storage_bucket: dataylor-bucket2
     gcp_project: redhat-lab-311219
