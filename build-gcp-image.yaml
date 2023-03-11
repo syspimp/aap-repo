@@ -22,9 +22,20 @@
     ansible.posix.mount:
       path: "{{ mount_path }}"
       src: "{{ nfs_target }}"
+      boot: no
       fstype: nfs
       opts: noauto,x-systemd.automount,x-systemd.device-timeout=10,timeo=14,x-systemd.idle-timeout=1min
       state: present
+    become: yes
+
+  - name: "wtf"
+    shell: |
+      set -x
+      ls -lah {{ mount_path }}/
+      mount
+      who am i
+      cd /root
+      ls -lah
     become: yes
 
   - name: "Sanity check: file to upload exists"
