@@ -72,7 +72,7 @@
       group: root
       mode: '0644'
     when:
-      - ( ( playimage.stat.exists == true ) and ( diskimage.stat.exists == false ) and ( playimage.stat.checksum == images[selected_os].chksum ) or ( ( playimage.stat.exists == true ) and ( diskimage.stat.exists == true ) and ( diskimage.stat.checksum != images[selected_os].chksum ) and ( playimage.stat.checksum == images[selected_os].chksum ) )
+      - ( ( playimage.stat.exists == true ) and ( diskimage.stat.exists == false ) and ( playimage.stat.checksum == images[selected_os].chksum ) ) or ( ( playimage.stat.exists == true ) and ( diskimage.stat.exists == true ) and ( diskimage.stat.checksum != images[selected_os].chksum ) and ( playimage.stat.checksum == images[selected_os].chksum ) )
 
   - name: wrapper for download
     block:
