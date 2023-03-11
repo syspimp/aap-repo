@@ -9,13 +9,13 @@
     disk_to_upload: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
     gcp_storage_bucket: dataylor-bucket2
     #gcp_project: redhat-lab-311219
-    #gcp_auth_kind: serviceaccount
+    gcp_auth_kind: serviceaccount
   tasks:
   - name: create a bucket
     google.cloud.gcp_storage_bucket:
       name: "{{ gcp_storage_bucket }}"
       #project: "{{ gcp_project }}"
-      #auth_kind: ""{{ gcp_auth_kind }}""
+      auth_kind: ""{{ gcp_auth_kind }}""
       #service_account_file: "{{ account_file }}"
       state: present
     ignore_errors: yes
@@ -26,7 +26,7 @@
       bucket: "{{ gcp_storage_bucket }}"
       src: "{{ disk_to_upload }}"
       dest: "{{ gcp_image_name }}"
-       #project: redhat-lab-311219
-      #auth_kind: serviceaccount
+      #project: redhat-lab-311219
+      auth_kind: serviceaccount
       #service_account_file: "{{ account_file }}"
 
