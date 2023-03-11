@@ -26,7 +26,13 @@
     shell: |
       git pull
     args:
-      chdir: "/opt/aap-repo/execution-environments/{{ EE_TYPE }}"
+      chdir: "/opt/aap-repo"
+
+  - name: "**Removing old images" 
+    shell: |
+      ./cleanup-podman-storage.sh
+    args:
+      chdir: "/opt/aap-repo/execution-environments"
 
   - name: "**Building the image" 
     environment:
