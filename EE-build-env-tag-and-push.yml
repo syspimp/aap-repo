@@ -22,6 +22,12 @@
       msg: "You need to read and configure /opt/aap-repo/execution-environents/{{ EE_TYPE }}/ansible.cfg"
     when: playconfig.stat.exists == false
 
+  - name: "**Getting latest changes" 
+    shell: |
+      git pull
+    args:
+      chdir: "/opt/aap-repo/execution-environments/{{ EE_TYPE }}"
+
   - name: "**Building the image" 
     environment:
       subuser: "{{ rhsm_username }}"
