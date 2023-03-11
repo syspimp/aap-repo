@@ -8,8 +8,8 @@
     selected_os: rhel79
     disk_to_upload: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
     gcp_storage_bucket: dataylor-bucket2
-    gcp_project: redhat-lab-311219
-    gcp_auth_kind: serviceaccount
+    #gcp_project: redhat-lab-311219
+    #gcp_auth_kind: serviceaccount
   tasks:
   - name: create a bucket
     google.cloud.gcp_storage_bucket:
