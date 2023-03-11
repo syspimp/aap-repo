@@ -52,11 +52,9 @@
         become: yes
 
   - name: "Delete custom working custom image"
-    shell: |
-      rm -f /tmp/{{ images[selected_os].input }}.custom
-    args:
-      executable: /bin/bash
-    register: filename
+    file:
+      path: "/tmp/{{ images[selected_os].input }}.custom"
+      state: absent
 
   - name: "builder: working from backup of image {{ images[selected_os].input }}"
     ansible.builtin.copy:

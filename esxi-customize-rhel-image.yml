@@ -1,13 +1,36 @@
-  - name: grab the access token
-    shell: |
-      curl -s https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token \
-      -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq -r '.access_token'
+  - name: "grab access token"
+    ansible.builtin.uri:
+      url: "https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token"
+      method: POST
+      body:
+        grant_type: refresh_token
+        client_id: rhsm-api
+        refresh_token: "{{ rhsm_token }}"
+      status_code: [304,200]
     register: access_token
-      
-  - name: create the filename
-    shell: |
-      curl -H "Authorization: Bearer {{ access_token.stdout }}" "https://api.access.redhat.com/management/v1/images/{{ images[selected_os].chksum }}/download"
+
+  - name: "dump access_token"
+    debug: access_token
+
+  - name: "grab filename"
+    ansible.builtin.uri:
+      url: "https://api.access.redhat.com/management/v1/images/{{ images[selected_os].chksum }}/download"
+      method: GET
+      headers:
+        Authorization: "Bearer {{ access_token.json.access_token }}"
+      status_code: [304,200]
     register: imageraw
+
+#  - name: grab the access token
+#    shell: |
+#      curl -s https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token \
+#      -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq -r '.access_token'
+#    register: access_token
+#
+#  - name: create the filename
+#    shell: |
+#      curl -H "Authorization: Bearer {{ access_token.stdout }}" "https://api.access.redhat.com/management/v1/images/{{ images[selected_os].chksum }}/download"
+#    register: imageraw
 
 #  - name: create the filename by script
 #    set_fact: |
@@ -17,22 +40,25 @@
 #    set_fact: |
 #      url: "{{ imageraw.stdout | community.general.json_query('href') }}"
       
-  - name: create the filename by script
-    shell: |
-      echo {{ imageraw.stdout | to_json }} | jq -r '.body.filename'
-    args:
-      executable: /bin/bash
-    register: filename
+  - name: "dump access_token"
+    debug: imageraw
+
+#  - name: create the filename by script
+#    shell: |
+#      echo {{ imageraw.stdout | to_json }} | jq -r '.body.filename'
+#    args:
+#      executable: /bin/bash
+#    register: filename
 
   - name: "Check if image file exists in playbook dir"
     stat:
-      path: "{{ playbook_dir }}/{{ filename.stdout }}"
+      path: "{{ playbook_dir }}/{{ imageraw.json.filename }}"
     register: playimage
 
-  - name: "save {{ filename.stdout }} to environment"
+  - name: "save {{ imageraw.json.filename }} to environment"
     ansible.builtin.copy:
-      src: "{{ playbook_dir }}/{{ filename.stdout }}"
-      dest: "/tmp/{{ filename.stdout }}"
+      src: "{{ playbook_dir }}/{{ imageraw.json.filename }}"
+      dest: "/tmp/{{ imageraw.json.filename }}"
       owner: root
       group: root
       mode: '0644'
@@ -40,7 +66,7 @@
 
   - name: "Check if image file exists at target now"
     stat:
-      path: "/tmp/{{ filename.stdout }}"
+      path: "/tmp/{{ imageraw.json.filename }}"
     register: diskimage
 
   - name: wrapper for download
