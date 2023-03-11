@@ -153,8 +153,8 @@
       scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/.ssh/builder /tmp/{{ images[selected_os].output }}.tmp.vmdk root@{{ item }}:{{ VMWROOT }}/
     loop: "{{ ESXIHOSTS }}"
 
-  - name: "builder: remove tmp vmdk"
-    file:
-      path: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
-      state: absent
+#  - name: "builder: remove tmp vmdk"
+#    file:
+#      path: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
+#      state: absent
 
