@@ -85,7 +85,7 @@
 
   - name: "builder: setting the root password"
     shell: |
-      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --root-password password:{{ ROOTPASS }}
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --root-password password:{{ supersecretpassword }}
 
   - name: "builder: customizing hostname"
     shell: |
@@ -142,7 +142,7 @@
     copy:
       src: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
       dest: "{{ mount_path}}/{{ images[selected_os].output }}.tmp.vmdk"
-    remote_src: yes
+      remote_src: yes
     become: yes
 
   - name: "Unmount nfs share"
