@@ -107,10 +107,10 @@
     shell: |
       virt-customize -a /tmp/{{ images[selected_os].input }}.custom --firstboot /tmp/firstboot.sh
 
-  - name: "builder: tell selinux to relabel next boot"
-    shell: |
-      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "touch /.autorelabel"
-
+#  - name: "builder: tell selinux to relabel next boot"
+#    shell: |
+#      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "touch /.autorelabel"
+#
   - name: "builder: running qemu-convert to vmdk"
     shell: |
       qemu-img convert /tmp/{{ images[selected_os].input }}.custom -O vmdk -o adapter_type=lsilogic,subformat=streamOptimized,compat6 /tmp/{{ images[selected_os].output }}.tmp.vmdk -p
