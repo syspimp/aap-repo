@@ -43,7 +43,7 @@
       auth_kind: "{{ gcp_auth_kind }}"
       #project: redhat-lab-311219
       #service_account_file: "{{ account_file }}"
-    when: sanity.stat.exists == yes
+    when: sanity.stat.exists == true
 
   - name: "Mount nfs share to upload images"
     ansible.posix.mount:
