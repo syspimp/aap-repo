@@ -8,7 +8,7 @@
         client_id: rhsm-api
         refresh_token: "{{ rhsm_token }}"
       status_code: [304,200]
-    return_content: yes
+      return_content: yes
     register: access_token
 
   - name: "dump access_token"
