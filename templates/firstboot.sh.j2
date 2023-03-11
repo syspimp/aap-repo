@@ -14,8 +14,6 @@ done
 main()
 {
   # code goes here
-  growpart /dev/sda 3
-  xfs_growfs /dev/sda3
   # configuration management loop
   if [ -e /var/log/firstboot/.success ]
   then
@@ -29,6 +27,8 @@ main()
   # ubuntu networking
   if [[ -e /etc/os-release ]]
   then
+    growpart /dev/sda 1
+    resize2fs /dev/sda1
     if [[ ! -e /etc/netplan/99_config.yaml ]]
     then
       cat >/etc/netplan/99_config.yaml<<EOF
@@ -53,6 +53,8 @@ EOF
   # rhel networking
   if [[ -e /etc/redhat-release ]]
   then
+    growpart /dev/sda 3
+    xfs_growfs /dev/sda3
     grep DNS /etc/sysconfig/network-scripts/ifcfg-eth0 > /dev/null 2>&1
     if [[ $? -ne 0 ]]
     then
@@ -65,8 +67,10 @@ EOF
     dnf install -y jq open-vm-tools
   fi
   # fedora networking
-  if [[ -e /etc/redhat-release ]]
+  if [[ -e /etc/fedora-release ]]
   then
+    growpart /dev/sda 3
+    xfs_growfs /dev/sda3
     grep DNS /etc/sysconfig/network-scripts/ifcfg-eth0 > /dev/null 2>&1
     if [[ $? -ne 0 ]]
     then
