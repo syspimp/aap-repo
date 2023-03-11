@@ -5,11 +5,26 @@
     #account_file: '/home/dataylor/Downloads/redhat-lab-311219-18edacc3b415.json'
     gcp_image_name: rhel7.9_golden_image
     selected_os: rhel79
-    disk_to_upload: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
+    disk_to_upload: "/mnt/vmdks/{{ images[selected_os].output }}.tmp.vmdk"
     gcp_storage_bucket: dataylor-bucket2
     #gcp_project: redhat-lab-311219
     gcp_auth_kind: serviceaccount
+    mount_path: /mnt/vmdks
+    nfs_target: 10.55.102.34:/mnt/drobopro/datastore1/vmdks
   tasks:
+  - name: "Mount nfs share to upload images"
+    mount:
+      path: "{{ mount_path }}"
+      src: "{{ nfs_target }}"
+      fstype: nfs
+      opts: noauto,x-systemd.automount,x-systemd.device-timeout=10,timeo=14,x-systemd.idle-timeout=1min
+      state: present
+
+  - name: "Sanity check: file to upload exists"
+    stat:
+      path: "{{ disk_to_upload }}"
+    register: sanity
+
   - name: create a bucket
     google.cloud.gcp_storage_bucket:
       name: "{{ gcp_storage_bucket }}"
@@ -17,7 +32,7 @@
       #project: "{{ gcp_project }}"
       #service_account_file: "{{ account_file }}"
       state: present
-    ignore_errors: yes
+    when: sanity.stat.exists == true
 
   - name: create a object
     google.cloud.gcp_storage_object:
@@ -28,4 +43,5 @@
       auth_kind: "{{ gcp_auth_kind }}"
       #project: redhat-lab-311219
       #service_account_file: "{{ account_file }}"
+    when: sanity.stat.exists == yes
 
