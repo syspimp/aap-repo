@@ -1,5 +1,5 @@
 ---
-- hosts: builder
+- hosts: builder*
   #connection: local
   vars:
     #account_file: '/home/dataylor/Downloads/redhat-lab-311219-dc8b788a39f8.json'
