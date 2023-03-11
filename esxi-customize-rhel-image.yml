@@ -10,7 +10,8 @@
     register: access_token
 
   - name: "dump access_token"
-    debug: access_token
+    debug: 
+      var: access_token
 
   - name: "grab filename"
     ansible.builtin.uri:
@@ -41,7 +42,8 @@
 #      url: "{{ imageraw.stdout | community.general.json_query('href') }}"
       
   - name: "dump access_token"
-    debug: imageraw
+    debug:
+      var: imageraw
 
 #  - name: create the filename by script
 #    shell: |
