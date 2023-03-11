@@ -25,6 +25,11 @@
       path: "{{ disk_to_upload }}"
     register: sanity
 
+  - name: "Fail when ansible.cfg not configured"
+    ansible.builtin.fail:
+      msg: "the file {{ disk_to_upload }} does not exist. Have you uploaded to the esxi host?"
+    when: sanity.stat.exists == false
+
   - name: create a bucket
     google.cloud.gcp_storage_bucket:
       name: "{{ gcp_storage_bucket }}"
