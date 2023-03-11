@@ -1,4 +1,4 @@
-  - name: "grab access token"
+  - name: "grab access token from redhat cdn"
     ansible.builtin.uri:
       url: "https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token"
       method: POST
@@ -15,11 +15,10 @@
     debug: 
       var: access_token
 
-  - name: "grab filename"
+  - name: "grab filename from redhat cdn"
     ansible.builtin.uri:
       url: "https://api.access.redhat.com/management/v1/images/{{ images[selected_os].chksum }}/download"
       method: GET
-      body_format: json
       headers:
         Authorization: "Bearer {{ access_token.json.access_token }}"
       status_code: [304,200]
@@ -44,7 +43,7 @@
 #    set_fact: |
 #      url: "{{ imageraw.stdout | community.general.json_query('href') }}"
       
-  - name: "dump access_token"
+  - name: "dump imageraw"
     debug:
       var: imageraw
 
