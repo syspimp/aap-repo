@@ -12,6 +12,12 @@
     mount_path: /mnt/vmdks
     nfs_target: 10.55.102.34:/mnt/drobopro/datastore1/vmdks
   tasks:
+  - name: "Ensure mount point exists"
+    file:
+      path: "{{ mount_path }}"
+      state: directory
+    become: yes
+
   - name: "Mount nfs share to upload images"
     ansible.posix.mount:
       path: "{{ mount_path }}"

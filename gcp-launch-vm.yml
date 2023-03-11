@@ -79,7 +79,7 @@
           community.vmware.vmware_guest:
             hostname: "{{ ESXIHOST }}"
             username: "{{ VCENTER_USER }}"
-            password: "{{ ROOTPASS }}"
+            password: "{{ supersecretpassword }}"
             validate_certs: no
             folder: "/ha-datacenter/vm/"
             name: "{{ NEWVM }}"
@@ -128,7 +128,7 @@
           community.vmware.vmware_guest_disk:
             hostname: "{{ ESXIHOST }}"
             username: "{{ VCENTER_USER }}"
-            password: "{{ ROOTPASS }}"
+            password: "{{ supersecretpassword }}"
             datacenter: "{{ datacenter_name }}"
             validate_certs: no
             #name: "{{ NEWVM }}"
@@ -151,7 +151,7 @@
           community.vmware.vmware_guest:
             hostname: "{{ ESXIHOST }}"
             username: "{{ VCENTER_USER }}"
-            password: "{{ ROOTPASS }}"
+            password: "{{ supersecretpassword }}"
             validate_certs: no
             name: "{{ NEWVM }}"
             state: poweredoff
@@ -170,7 +170,7 @@
           community.vmware.vmware_guest:
             hostname: "{{ ESXIHOST }}"
             username: "{{ VCENTER_USER }}"
-            password: "{{ ROOTPASS }}"
+            password: "{{ supersecretpassword }}"
             validate_certs: no
             name: "{{ NEWVM }}"
             state: poweredon

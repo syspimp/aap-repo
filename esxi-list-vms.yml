@@ -9,7 +9,7 @@
     community.vmware.vmware_vm_info:
       hostname: '{{ item }}'
       username: "{{ VCENTER_USER }}"
-      password: "{{ ROOTPASS }}"
+      password: "{{ supersecretpassword }}"
       validate_certs: no
     delegate_to: localhost
     register: vminfo
