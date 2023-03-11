@@ -94,6 +94,7 @@ EOF
   while [[ "XX${newhostname}XX" == "XXXX" ]]
   do
     newhostname=$(/usr/bin/vmware-rpctool "info-get guestinfo.hostname")
+    hostnamectl set-hostname ${newhostname}
     sleep 10
   done
 
