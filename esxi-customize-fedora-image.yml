@@ -128,7 +128,7 @@
     become: yes
 
   - name: "Mount nfs share to upload images"
-    mount:
+    ansible.posix.mount:
       path: "{{ mount_path }}"
       src: "{{ nfs_target }}"
       fstype: nfs
@@ -144,7 +144,7 @@
     become: yes
 
   - name: "Unmount nfs share"
-    mount:
+    ansible.posix.mount:
       path: "{{ mount_path }}"
       state: unmounted
     become: yes
