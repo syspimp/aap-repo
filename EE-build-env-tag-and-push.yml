@@ -24,8 +24,8 @@
 
   - name: "**Building the image" 
     environment:
-      subuser: "{{ SUBUSER }}"
-      subpass: "{{ SUBPASS }}"
+      subuser: "{{ rhsm_user }}"
+      subpass: "{{ rhsm_pass }}"
     shell: |
       podman login -u "${subuser}" -p "${subpass}" registry.redhat.io
       ansible-builder build -t {{ TAG }} -v {{ VERBOSE }} {{ USE_CACHE }}
@@ -43,6 +43,7 @@
       dockeruser: "{{ dockerio_user }}"
       dockerpass: "{{ dockerio_pass }}"
     shell: |
+      echo {{ dockerio_user }}
       podman login -u "${dockeruser}" -p "${dockerpass}" docker.io
       podman push {{ UPSTREAM_REPO }}:{{ UPSTREAM_TAG }}
     args:

@@ -3,4 +3,5 @@ collections:
   - name: community.general
   - name: community.vmware
   - name: vmware.vmware_rest
+  - name: ansible.posix
 
