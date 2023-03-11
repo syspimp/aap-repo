@@ -44,7 +44,7 @@ EOF
     netplan apply
     ip link set dev ens192 up
     sleep 5
-    apt-get install -y openssh-release open-vm-tools jq
+    apt-get install -y openssh-server open-vm-tools jq
     ssh-keygen -A
     systemctl enable ssh
     ufw allow ssh
