@@ -27,6 +27,8 @@
     OFFLINE_TOKEN: "{{ rhsm_token }}"
     SUBUSER: "{{ rhsm_username }}"
     SUBPASS: "{{ rhsm_password }}"
+    mount_path: /mnt/vmdks
+    nfs_target: 10.55.102.34:/mnt/mycloud1/vmdks
   environment:
     LIBGUESTFS_BACKEND: direct
   tasks:

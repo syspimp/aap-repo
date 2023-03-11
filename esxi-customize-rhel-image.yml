@@ -153,6 +153,34 @@
       scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /root/.ssh/builder /tmp/{{ images[selected_os].output }}.tmp.vmdk root@{{ item }}:{{ VMWROOT }}/
     loop: "{{ ESXIHOSTS }}"
 
+  - name: "Ensure storage mount point exists"
+    file:
+      path: "{{ mount_path }}"
+      state: directory
+    become: yes
+
+  - name: "Mount nfs share to upload images"
+    mount:
+      path: "{{ mount_path }}"
+      src: "{{ nfs_target }}"
+      fstype: nfs
+      opts: noauto,x-systemd.automount,x-systemd.device-timeout=10,timeo=14,x-systemd.idle-timeout=1min
+      state: present
+    become: yes
+
+  - name: "Save vmdk to cloud storage"
+    copy:
+      src: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
+      dest: "{{ mount_path}}/{{ images[selected_os].output }}.tmp.vmdk"
+    remote_src: yes
+    become: yes
+
+  - name: "Unmount nfs share"
+    mount:
+      path: "{{ mount_path }}"
+      state: unmounted
+    become: yes
+
 #  - name: "builder: remove tmp vmdk"
 #    file:
 #      path: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
