@@ -11,10 +11,6 @@
       return_content: yes
     register: access_token
 
-  - name: "dump access_token"
-    debug: 
-      var: access_token
-
   - name: "grab filename from redhat cdn"
     ansible.builtin.uri:
       url: "https://api.access.redhat.com/management/v1/images/{{ images[selected_os].chksum }}/download"
@@ -23,36 +19,6 @@
         Authorization: "Bearer {{ access_token.json.access_token }}"
       status_code: [304,200]
     register: imageraw
-
-#  - name: grab the access token
-#    shell: |
-#      curl -s https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token \
-#      -d grant_type=refresh_token -d client_id=rhsm-api -d refresh_token={{ OFFLINE_TOKEN }} | jq -r '.access_token'
-#    register: access_token
-#
-#  - name: create the filename
-#    shell: |
-#      curl -H "Authorization: Bearer {{ access_token.stdout }}" "https://api.access.redhat.com/management/v1/images/{{ images[selected_os].chksum }}/download"
-#    register: imageraw
-
-#  - name: create the filename by script
-#    set_fact: |
-#      filename: "{{ imageraw.stdout | community.general.json_query('filename') }}"
-#
-#  - name: get the url
-#    set_fact: |
-#      url: "{{ imageraw.stdout | community.general.json_query('href') }}"
-      
-  - name: "dump imageraw"
-    debug:
-      var: imageraw
-
-#  - name: create the filename by script
-#    shell: |
-#      echo {{ imageraw.stdout | to_json }} | jq -r '.body.filename'
-#    args:
-#      executable: /bin/bash
-#    register: filename
 
   - name: "Check if image file exists in playbook dir"
     stat:
@@ -76,14 +42,7 @@
 
   - name: wrapper for download
     block:
-#    - name: get the url
-#      shell: |
-#        echo {{ imageraw.stdout | to_json }} | jq -r '.body.href'
-#      args:
-#        executable: /bin/bash
-#      register: url
-
-    - name: "save {{ images[selected_os].input }} to disk"
+    - name: "save correct {{ images[selected_os].input }} to disk"
       uri:
         url: "{{ imageraw.url }}"
         method: GET
@@ -117,11 +76,9 @@
         become: yes
 
   - name: "Delete custom working custom image"
-    shell: |
-      rm -f /tmp/{{ images[selected_os].input }}.custom
-    args:
-      executable: /bin/bash
-    register: filename
+    file:
+      path: "/tmp/{{ images[selected_os].input }}.custom"
+      state: absent
 
   - name: "builder: working from backup of image {{ images[selected_os].input }}"
     ansible.builtin.copy:
