@@ -56,41 +56,43 @@
 
   - name: "Check if image file exists in playbook dir"
     stat:
-      path: "{{ playbook_dir }}/{{ imageraw.json.filename }}"
+      path: "{{ playbook_dir }}/{{ images[selected_os].input }}"
     register: playimage
-
-  - name: "save {{ imageraw.json.filename }} to environment"
-    ansible.builtin.copy:
-      src: "{{ playbook_dir }}/{{ imageraw.json.filename }}"
-      dest: "/tmp/{{ imageraw.json.filename }}"
-      owner: root
-      group: root
-      mode: '0644'
-    when: playimage.stat.exists == true
 
   - name: "Check if image file exists at target now"
     stat:
-      path: "/tmp/{{ imageraw.json.filename }}"
+      path: "/tmp/{{ images[selected_os].input }}"
     register: diskimage
+
+  - name: "save {{ images[selected_os].input }} to environment"
+    ansible.builtin.copy:
+      src: "{{ playbook_dir }}/{{ images[selected_os].input }}"
+      dest: "/tmp/{{ images[selected_os].input }}"
+      owner: root
+      group: root
+      mode: '0644'
+    when:
+      - ( ( playimage.stat.exists == true ) and ( diskimage.stat.exists == false ) and ( playimage.stat.checksum == images[selected_os].chksum ) or ( ( playimage.stat.exists == true ) and ( diskimage.stat.exists == true ) and ( diskimage.stat.checksum != images[selected_os].chksum ) and ( playimage.stat.checksum == images[selected_os].chksum ) )
 
   - name: wrapper for download
     block:
-    - name: get the url
-      shell: |
-        echo {{ imageraw.stdout | to_json }} | jq -r '.body.href'
-      args:
-        executable: /bin/bash
-      register: url
+#    - name: get the url
+#      shell: |
+#        echo {{ imageraw.stdout | to_json }} | jq -r '.body.href'
+#      args:
+#        executable: /bin/bash
+#      register: url
 
-    - name: "save {{ filename.stdout }} to disk"
+    - name: "save {{ images[selected_os].input }} to disk"
       uri:
-        url: "{{ url.stdout }}"
+        url: "{{ imageraw.url }}"
         method: GET
-        dest: "/tmp/{{ filename.stdout }}"
+        dest: "/tmp/{{ images[selected_os].input }}"
         status_code: [304,200]
         headers:
-          Authorization: "Bearer {{ access_token.stdout }}"
-    when: diskimage.stat.exists == false
+          Authorization: "Bearer {{ access_token.json.access_token }}"
+    when: 
+      - ( diskimage.stat.exists == false ) or ( diskimage.stat.checksum != images[selected_os].chksum )
 
     rescue:
     - name: "Download Block Wrapper completed"
