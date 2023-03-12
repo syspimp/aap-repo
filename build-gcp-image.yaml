@@ -32,6 +32,7 @@
     shell: |
       set -x
       ls -lah {{ mount_path }}/
+      ls -lh /mnt/
       mount
       who am i
       cd /root
