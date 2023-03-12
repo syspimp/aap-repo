@@ -38,6 +38,8 @@
       who am i
       cd /root
       ls -lah
+    args:
+      executable: /bin/bash
     become: yes
 
   - name: "Sanity check: file to upload exists"
