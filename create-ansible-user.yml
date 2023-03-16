@@ -2,21 +2,21 @@
 - hosts: all
   become: yes
   vars:
-    username: ansiblesvc
-    groups: "wheel,{{ username }}"
+    newusername: ansiblesvc
+    newgroups: "wheel,{{ username }}"
     # provide path to a public keyfile or paste in the pub key
     public_key: lookup('file', '/home/dataylor/ansiblesvc.pub')
     #public_key: "ssh-rsa AAAAB3Nz ...blah... 03Ug30uAv8= you@there.com"
   tasks:
   - name: "Add the automation user '{{ username }}'"
     user:
-      name: "{{ username }}"
+      name: "{{ newusername }}"
       comment: "Built By Ansible Automation"
-      group: "{{ groups }}"
+      group: "{{ newgroups }}"
 
   - name: Set authorized key taken from file
     ansible.posix.authorized_key:
-      user: "{{ username }}"
+      user: "{{ newusername }}"
       state: present
       key: "{{ public_key }}"
 
