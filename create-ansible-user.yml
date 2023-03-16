@@ -8,12 +8,22 @@
     public_key: lookup('file', '/home/dataylor/ansiblesvc.pub')
     #public_key: "ssh-rsa AAAAB3Nz ...blah... 03Ug30uAv8= you@there.com"
   tasks:
-  - name: "Add the automation user '{{ newusername }}'"
-    user:
-      name: "{{ newusername }}"
-      comment: "Built By Ansible Automation"
-      groups: "{{ newgroups }}"
-      append: yes
+  - name: error handling
+    block:
+    - name: "Add the automation user '{{ newusername }}'"
+      user:
+        name: "{{ newusername }}"
+        comment: "Built By Ansible Automation"
+        groups: "{{ newgroups }}"
+        append: yes
+
+    rescue:
+    - name: "Ubuntu: Add the automation user '{{ newusername }}'"
+      user:
+        name: "{{ newusername }}"
+        comment: "Built By Ansible Automation"
+        groups: "{{ newgroups.replace('wheel','sudo') }}"
+        append: yes
 
   - name: Set authorized key taken from file
     ansible.posix.authorized_key:
