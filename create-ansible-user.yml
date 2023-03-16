@@ -1,7 +1,7 @@
 ---
 - hosts: all
-  vars:
   become: yes
+  vars:
     username: ansiblesvc
     groups: "wheel,{{ username }}"
     # provide path to a public keyfile or paste in the pub key
