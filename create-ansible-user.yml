@@ -3,7 +3,7 @@
   become: yes
   vars:
     newusername: ansiblesvc
-    newgroups: "wheel,{{ username }}"
+    newgroups: "wheel,root"
     # provide path to a public keyfile or paste in the pub key
     public_key: lookup('file', '/home/dataylor/ansiblesvc.pub')
     #public_key: "ssh-rsa AAAAB3Nz ...blah... 03Ug30uAv8= you@there.com"
