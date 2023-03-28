@@ -5,11 +5,9 @@
     datacenter_name: ha-datacenter
     osflavor: rhel86
     guest_id:
-      rhel79: rhel7_64Guest
-      rhel86: rhel7_64Guest
-      rhel87: rhel7_64Guest
+      rhel: rhel7_64Guest
       fedora37: fedora64Guest
-      fedora37test: rhel7_64Guest
+      fedora: rhel7_64Guest
       ubuntu22: ubuntu64Guest
       windows: windows7_64Guest
       centos6: centos64Guest
