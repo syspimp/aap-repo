@@ -81,36 +81,36 @@
       path: "/tmp/{{ images[selected_os].output }}.tmp.vmdk"
       state: absent
 
-  - name: "builder: setting the root password"
-    shell: |
-      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --root-password password:{{ supersecretpassword }}
-
-  - name: "builder: customizing hostname"
-    shell: |
-      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --hostname {{ images[selected_os].output }}
-
-  - name: "builder: injecting ssh key"
-    shell: |
-      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --ssh-inject root:file:/tmp/{{ SSHPUBKEY }}
-
-#  - name: "builder: customizing add base"
-#    shell: |
-#      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "yum -y install {{ REQUIREDRPMS }}"
-#    ignore_errors: yes
-
-  - name: "builder: adding scripts to /root"
-    shell: |
-      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --copy-in /tmp/{{ item }}:/root
-    loop: "{{ COPYIN }}"
-
-  - name: "builder: adding growdisk script to firstboot"
-    shell: |
-      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --firstboot /tmp/firstboot.sh
-
-#  - name: "builder: tell selinux to relabel next boot"
-#    shell: |
-#      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "touch /.autorelabel"
-#
+##  - name: "builder: setting the root password"
+##    shell: |
+##      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --root-password password:{{ supersecretpassword }}
+##
+##  - name: "builder: customizing hostname"
+##    shell: |
+##      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --hostname {{ images[selected_os].output }}
+##
+##  - name: "builder: injecting ssh key"
+##    shell: |
+##      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --ssh-inject root:file:/tmp/{{ SSHPUBKEY }}
+##
+###  - name: "builder: customizing add base"
+###    shell: |
+###      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "yum -y install {{ REQUIREDRPMS }}"
+###    ignore_errors: yes
+##
+##  - name: "builder: adding scripts to /root"
+##    shell: |
+##      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --copy-in /tmp/{{ item }}:/root
+##    loop: "{{ COPYIN }}"
+##
+##  - name: "builder: adding growdisk script to firstboot"
+##    shell: |
+##      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --firstboot /tmp/firstboot.sh
+##
+###  - name: "builder: tell selinux to relabel next boot"
+###    shell: |
+###      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "touch /.autorelabel"
+###
   - name: "builder: running qemu-convert to vmdk"
     shell: |
       qemu-img convert /tmp/{{ images[selected_os].input }}.custom -O vmdk -o adapter_type=lsilogic,subformat=streamOptimized,compat6 /tmp/{{ images[selected_os].output }}.tmp.vmdk -p
