@@ -27,11 +27,14 @@ main()
   # ubuntu networking
   if [[ -e /etc/os-release ]]
   then
-    growpart /dev/sda 1
-    resize2fs /dev/sda1
-    if [[ ! -e /etc/netplan/99_config.yaml ]]
+    source /etc/os-release
+    if [[ "${NAME}" == "Ubuntu" ]]
     then
-      cat >/etc/netplan/99_config.yaml<<EOF
+      growpart /dev/sda 1
+      resize2fs /dev/sda1
+      if [[ ! -e /etc/netplan/99_config.yaml ]]
+      then
+        cat >/etc/netplan/99_config.yaml<<EOF
 network:
   version: 2
   renderer: networkd
@@ -39,16 +42,17 @@ network:
     ens192:
       dhcp4: true
 EOF
+      fi
+      sleep 2
+      netplan apply
+      ip link set dev ens192 up
+      sleep 5
+      apt-get install -y openssh-server open-vm-tools jq
+      ssh-keygen -A
+      systemctl enable ssh
+      ufw allow ssh
+      systemctl start ssh
     fi
-    sleep 2
-    netplan apply
-    ip link set dev ens192 up
-    sleep 5
-    apt-get install -y openssh-server open-vm-tools jq
-    ssh-keygen -A
-    systemctl enable ssh
-    ufw allow ssh
-    systemctl start ssh
   fi
   # rhel networking
   if [[ -e /etc/redhat-release ]]
