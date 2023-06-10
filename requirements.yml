@@ -4,10 +4,15 @@
 # or ansible-galaxy install -r requirements.yml
 collections:
   - name: community.aws
-    version: 1.5.0
+    #version: 1.5.0
+    source: https://galaxy.ansible.com
   - name: amazon.aws
-    version: 1.5.0
+    #version: 1.5.0
+    source: https://galaxy.ansible.com
   - name: performancecopilot.metrics
     version: 2.2.4
+    source: https://galaxy.ansible.com
   - name: community.general
+    source: https://galaxy.ansible.com
   - name: redhat.satellite
+    source: https://galaxy.ansible.com
