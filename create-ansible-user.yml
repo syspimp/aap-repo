@@ -2,40 +2,51 @@
 - hosts: all
   become: yes
   vars:
-    newusername: ansiblesvc
-    newgroups: "wheel,root"
-    # provide path to a public keyfile or paste in the pub key
-    public_key: lookup('file', '/home/dataylor/ansiblesvc.pub')
-    #public_key: "ssh-rsa AAAAB3Nz ...blah... 03Ug30uAv8= you@there.com"
+    newusers:
+    - newusername: ansiblesvc
+      newgroups: "wheel,root"
+      # provide path to a public keyfile or paste in the pub key
+      public_key: lookup('file', '/home/dataylor/ansiblesvc.pub')
+      #public_key: "ssh-rsa AAAAB3Nz ...blah... 03Ug30uAv8= you@there.com"
+    - newusername: dataylor
+      newgroups: "wheel,root"
+      # provide path to a public keyfile or paste in the pub key
+      public_key: lookup('file', '/home/dataylor/ansiblesvc.pub')
+      #public_key: "ssh-rsa AAAAB3Nz ...blah... 03Ug30uAv8= you@there.com"
+  gather_facts: no
   tasks:
   - name: error handling
     block:
-    - name: "Add the automation user '{{ newusername }}'"
+    - name: "Test adding the automation user '{{ item.newusername }}' to wheel group"
       user:
-        name: "{{ newusername }}"
+        name: "{{ item.newusername }}"
         comment: "Built By Ansible Automation"
-        groups: "{{ newgroups }}"
+        groups: "{{ item.newgroups }}"
         append: yes
+      loop: "{{ newusers }}"
 
     rescue:
-    - name: "Ubuntu: Add the automation user '{{ newusername }}'"
+    - name: "Ubuntu: Add the automation user '{{ item.newusername }}' to sudo group"
       user:
-        name: "{{ newusername }}"
+        name: "{{ item.newusername }}"
         comment: "Built By Ansible Automation"
-        groups: "{{ newgroups.replace('wheel','sudo') }}"
+        groups: "{{ item.newgroups.replace('wheel','sudo') }}"
         append: yes
+      loop: "{{ newusers }}"
 
   - name: Set authorized key taken from file
     ansible.posix.authorized_key:
-      user: "{{ newusername }}"
+      user: "{{ item.newusername }}"
       state: present
-      key: "{{ public_key }}"
+      key: "{{ item.public_key }}"
+    loop: "{{ newusers }}"
 
   - name:
     template:
-      src: "{{ newusername }}.j2"
-      dest: "/etc/sudoers.d/{{ newusername }}"
+      src: "sudo-template.j2"
+      dest: "/etc/sudoers.d/{{ item.newusername }}"
       owner: root
       group: root
       mode: '0440'
+    loop: "{{ item.newusers }}"
 
