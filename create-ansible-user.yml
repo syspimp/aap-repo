@@ -48,5 +48,5 @@
       owner: root
       group: root
       mode: '0440'
-    loop: "{{ item.newusers }}"
+    loop: "{{ newusers }}"
 
