@@ -6,6 +6,7 @@
     osflavor: rhel86
     guest_id:
       rhel: rhel7_64Guest
+      rhel86: rhel7_64Guest
       fedora37: fedora64Guest
       fedora: rhel7_64Guest
       ubuntu22: ubuntu64Guest
