@@ -116,6 +116,20 @@ EOF
     sleep 10
   done
 
+  # wait until vmtoolsd returns a secondary role
+  while [[ "XX${ans_cloud}XX" == "XXXX" ]]
+  do
+    ans_cloud=$(/usr/bin/vmware-rpctool "info-get guestinfo.cloud")
+    sleep 10
+  done
+
+  # wait until vmtoolsd returns a secondary role
+  while [[ "XX${ans_sdlc}XX" == "XXXX" ]]
+  do
+    ans_sdlc=$(/usr/bin/vmware-rpctool "info-get guestinfo.sdlc")
+    sleep 10
+  done
+
   # standardize our fact variable
   mkdir -p  /etc/ansible/facts.d
   cat > /etc/ansible/facts.d/roles.fact <<EOF
@@ -123,6 +137,9 @@ EOF
 role=${newrole}
 [secondary]
 role=${newsecrole}
+[environment]
+cloud=${ans_cloud}
+sdlc=${ans_sdlc}
 EOF
 
   # wait until tower/aws returns a success message

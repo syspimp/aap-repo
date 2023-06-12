@@ -1,6 +1,7 @@
 - name: "Launch a vm in vmware from a golden image and callback to aap for provisioning"
   hosts: "{{ ESXIHOST | default('compute4.tfound.org',True) }}"
   vars:
+    sdlc: prod
     ESXIHOST: compute4.tfound.org
     datacenter_name: ha-datacenter
     osflavor: rhel86
@@ -21,6 +22,8 @@
         then
           cp -R "{{ VMWROOT }}/{{ OUTPUT }}" "{{ VMWROOT }}/{{ NEWVM }}"
         fi
+      args:
+        creates: "{{ VMWROOT }}/{{ NEWVM }}"
 
     - name: "[esxi_host] Error control for vmware_guest tasks"
       block:
@@ -114,6 +117,8 @@
         - name: "[esxi_host] add some parameters to the vmx file on the hypervisor for the hostname"
           shell: |
             echo -e "\nguestinfo.hostname = \"{{ NEWVM }}\"\nguestinfo.role = \"{{ ROLE }}\"\nguestinfo.secondaryrole = \"{{ SECONDARYROLE }}\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
+            sleep 1
+            echo -e "\nguestinfo.sdlc = \"{{ sdlc }}\"\nguestinfo.cloud = \"vmware\"" >> {{ VMWROOT }}/{{ NEWVM }}/{{ NEWVM }}.vmx
 
         - name: "[esxi_host] Power on virtual machine"
           community.vmware.vmware_guest:
