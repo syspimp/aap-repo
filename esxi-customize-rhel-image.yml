@@ -117,13 +117,13 @@
     shell: |
       virt-customize -a /tmp/{{ images[selected_os].input }}.custom --ssh-inject root:file:/tmp/{{ SSHPUBKEY }}
 
-  - name: "builder: registering and subscribing, change to use satellite here"
-    shell: |
-      virt-customize -v -x -a /tmp/{{ images[selected_os].input }}.custom --run-command "subscription-manager register \
-        --username={{ rhsm_username }} \
-        --password='{{ rhsm_password }}' \
-        --auto-attach \
-        --force"
+#  - name: "builder: registering and subscribing, change to use satellite here"
+#    shell: |
+#      virt-customize -v -x -a /tmp/{{ images[selected_os].input }}.custom --run-command "subscription-manager register \
+#        --username={{ rhsm_username }} \
+#        --password='{{ rhsm_password }}' \
+#        --auto-attach \
+#        --force"
 
 #  - name: "builder: customizing add base"
 #    shell: |
