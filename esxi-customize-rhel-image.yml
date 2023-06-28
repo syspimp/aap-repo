@@ -125,10 +125,10 @@
         --auto-attach \
         --force"
 
-#  - name: "builder: customizing add base"
-#    shell: |
-#      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "yum -y install {{ REQUIREDRPMS }}"
-#    ignore_errors: yes
+  - name: "builder: customizing add base"
+    shell: |
+      virt-customize -a /tmp/{{ images[selected_os].input }}.custom --run-command "yum -y install {{ REQUIREDRPMS }}"
+    ignore_errors: yes
 
   - name: "builder: adding scripts to /root"
     shell: |
