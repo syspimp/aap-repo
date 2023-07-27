@@ -169,6 +169,12 @@
       state: present
     become: yes
     ignore_errors: yes
+    register: mountstuff
+
+  - name: debug mount stuff
+    debug:
+      var: mountstuff
+    ignore_errors: yes
 
   - name: "Save vmdk to cloud storage"
     copy:
