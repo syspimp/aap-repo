@@ -168,6 +168,7 @@
       opts: noauto,x-systemd.automount,x-systemd.device-timeout=10,timeo=14,x-systemd.idle-timeout=1min
       state: present
     become: yes
+    ignore_errors: yes
 
   - name: "Save vmdk to cloud storage"
     copy:
@@ -175,12 +176,14 @@
       dest: "{{ mount_path}}/{{ images[selected_os].output }}.tmp.vmdk"
       remote_src: yes
     become: yes
+    ignore_errors: yes
 
   - name: "Unmount nfs share"
     ansible.posix.mount:
       path: "{{ mount_path }}"
       state: unmounted
     become: yes
+    ignore_errors: yes
 
 #  - name: "builder: remove tmp vmdk"
 #    file:
