@@ -59,6 +59,18 @@ EOF
   then
     growpart /dev/sda 3
     xfs_growfs /dev/sda3
+    if [[ ! -e '/etc/sysconfig/network-scripts/ifcfg-eth0' ]]
+    then
+      cat > /etc/sysconfig/network-scripts/ifcfg-eth0 <<-EFF
+        BOOTPROTO=dhcp
+        DEVICE=eth0
+        ONBOOT=yes
+        TYPE=Ethernet
+        USERCTL=no
+        DNS1=10.55.102.5
+        DNS2=10.55.110.1
+        EFF
+    fi
     grep DNS /etc/sysconfig/network-scripts/ifcfg-eth0 > /dev/null 2>&1
     if [[ $? -ne 0 ]]
     then
