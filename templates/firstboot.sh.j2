@@ -1,4 +1,7 @@
 #!/bin/bash -x
+# this is the firstboot script
+# it will set up the hostname, networking
+# and call back to Ansible Tower/Platform
 
 while getopts "dr" OPTION
 do
