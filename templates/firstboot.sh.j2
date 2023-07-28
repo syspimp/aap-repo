@@ -111,6 +111,7 @@ EFF
   do
     newhostname=$(/usr/bin/vmware-rpctool "info-get guestinfo.hostname")
     hostnamectl set-hostname ${newhostname}
+    systemctl restart NetworkManager
     sleep 10
   done
 
