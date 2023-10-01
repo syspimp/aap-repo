@@ -132,10 +132,23 @@
           register: deploy
           retries: 3
 
-        - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to vmware"
+        - name: "[esxi_host] Let's wait 3 minutes for it to boot and populate it's ip address to vmware"
           pause:
-            minutes: 1
+            minutes: 3
 
+      rescue:
+        - name: "[esxi_host] Failure Full Dump"
+          debug:
+            var: deploy
+          when: deploy is defined
+
+        - name: "[esxi_host] Failure Msg"
+          debug:
+            var: deploy.msg
+          when: deploy.msg is defined
+
+    - name: "Block add to Ansible Tower inventory"
+      block:
         - name: "[esxi_host] Update the ESXI Inventory"
           ignore_errors: yes
           uri:
@@ -151,23 +164,6 @@
             - "{{ tower.esxi_inventory_ids }}"
           delegate_to: localhost
 
-        - name: "[esxi_host] Let's wait a minute for it to boot and populate it's ip address to ansible platform"
-          pause:
-            minutes: 1
-
-      rescue:
-        - name: "[esxi_host] Failure Full Dump"
-          debug:
-            var: deploy
-          when: deploy is defined
-
-        - name: "[esxi_host] Failure Msg"
-          debug:
-            var: deploy.msg
-          when: deploy.msg is defined
-
-    - name: "Block add to Ansible Tower inventory"
-      block:
         - name: "Get host id to add to the 'esxi-vms' Group Inventory"
           uri:
             url: "https://{{ tower.server }}/api/v2/hosts/?name={{ deploy.instance.hw_name + '_' + deploy.instance.hw_product_uuid }}"
