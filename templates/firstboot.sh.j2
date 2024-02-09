@@ -158,6 +158,12 @@ cloud=${ans_cloud}
 sdlc=${ans_sdlc}
 EOF
 
+  # wait for sshd to start
+  while ! pidof sshd > /dev/null
+  do
+    sleep 5
+  done
+
   # wait until tower/aws returns a success message
   while [[ ! -e /var/log/firstboot/.success ]]
   do
