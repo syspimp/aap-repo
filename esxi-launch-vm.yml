@@ -149,20 +149,20 @@
 
     - name: "Block add to Ansible Tower inventory"
       block:
-        - name: "[esxi_host] Update the ESXI Inventory"
-          ignore_errors: yes
-          uri:
-            url: https://{{ tower.server }}/api/v2/inventory_sources/{{ item }}/update/
-            validate_certs: no
-            method: POST
-            user: "{{ tower.user }}"
-            password: "{{ tower.pass }}"
-            force_basic_auth: yes
-            status_code: [201,202]
-            body_format: json
-          with_items:
-            - "{{ tower.esxi_inventory_ids }}"
-          delegate_to: localhost
+#        - name: "[esxi_host] Update the ESXI Inventory"
+#          ignore_errors: yes
+#          uri:
+#            url: https://{{ tower.server }}/api/v2/inventory_sources/{{ item }}/update/
+#            validate_certs: no
+#            method: POST
+#            user: "{{ tower.user }}"
+#            password: "{{ tower.pass }}"
+#            force_basic_auth: yes
+#            status_code: [201,202]
+#            body_format: json
+#          with_items:
+#            - "{{ tower.esxi_inventory_ids }}"
+#          delegate_to: localhost
 
         - name: "Get host id to add to the 'esxi-vms' Group Inventory"
           uri:
