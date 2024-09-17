@@ -215,6 +215,38 @@
             body_format: json
           delegate_to: localhost
 
+        - name: Monitor host in Zenoss
+          uri:
+            url: "http://zenoss4-nginx-monitoring.apps.compute7-cluster.tfound.org/zport/dmd/device_router"
+            user: "admin"
+            password: "zenoss"
+            method: POST
+            body:
+            - action: DeviceRouter
+              method: addDevice
+              data:
+              - deviceName: "{{ NEWVM }}"
+                deviceClass: "/Server/Linux/"
+                collector: localhost
+                model: true
+                title: ""
+                productionState: 1000
+                priority: 3
+                snmpCommunity: RTO
+                snmpPort: 161
+                tag: ""
+                rackSlot: "esxi"
+                serialNumber: "0"
+                hwManufacturer: "Dell"
+                hwProductName: "r400"
+                osManufacturer: "Redhat"
+                osProductName: "Redhat"
+                comments: "added by ansible"
+              tid: 1
+            force_basic_auth: yes
+            status_code: 200
+            body_format: json
+
       rescue:
         - name: "[esxi_host] inventory"
           debug:
