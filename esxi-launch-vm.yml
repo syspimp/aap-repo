@@ -242,6 +242,7 @@
                 osManufacturer: "Redhat"
                 osProductName: "Redhat"
                 comments: "added by ansible"
+                links: "<a target=_new href='https://{{ NEWVM }}.tfound.org:9090'>Webconsole for {{ NEWVM }}</a>"
               tid: 1
             force_basic_auth: yes
             status_code: 200
