@@ -242,15 +242,13 @@
                 osManufacturer: "Redhat"
                 osProductName: "Redhat"
                 comments: "added by ansible"
-#                links: "<a target=_new href='https://{{ NEWVM }}.tfound.org:9090'>Webconsole for {{ NEWVM }}</a>\n
-#                  <a target=_new href='https://management.tfound.org/hosts/{{ NEWVM }}.tfound.org'>Satellite for {{ NEWVM }}</a>"
               tid: 1
             force_basic_auth: yes
             status_code: 200
             body_format: json
           retries: 3
           register: zenossadd
-          until: '200' in zenossadd.status
+          until: zenossadd.status.find("200") == -1
 
       rescue:
         - name: "[esxi_host] inventory"
