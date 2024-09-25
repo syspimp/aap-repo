@@ -249,6 +249,8 @@
             status_code: 200
             body_format: json
           retries: 3
+          register: zenossadd
+          until: '200' in zenossadd.status
 
       rescue:
         - name: "[esxi_host] inventory"
