@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  tasks:
+  - debug: "rhsm_token"
+     var: "{{ rhsm_token }}"
+        
+
