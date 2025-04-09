@@ -2,6 +2,6 @@
 - hosts: localhost
   tasks:
   - debug: "rhsm_token"
-      var: "{{ rhsm_token }}"
+      msg: "{{ rhsm_token }}"
         
 
