@@ -5,17 +5,23 @@ aap24=011a80be33c9b202e94f3a18e673e3d19eb1b2f480c49ef662205443576cfceb
 aap220=ad7a47fe00a52347eac978a99e96392decfdff121e4e61f0e038c7d6603d37f5
 aap23=ca2541e6e7f74306197c3fe8a009c7a9b228342d0469e6707c943c8435b01fa2
 rhel90=92862e085e4d5690cfa57de7155aa29bfdf21feec3d46dd4b61ca63293312af7
+rhel95=9d11248599b91178a600202412ad3ffc6f1c75c050d7b3c5484dc3f46fc06582
 rhel86=c9b32bef88d605d754b932aad0140e1955ab9446818c70c4c36ca75d6f442fe9
+rhel810=820853871801754056642ead33834fbe5640421b57e07f2c084684f4d1a7d2fe
 rhel79=46ed32cbe8183930f2488972a6d13bae2053e23c2f8ab8afa4d6e6757e9a7130
-checksum=${rhel86}
+checksum=${aap25}
 
 # get offline token: https://access.redhat.com/management/api  
-offline_token="{{ rhsm_token }}"
-while getopts "d" OPTION
+offline_token="eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0NzQzYTkzMC03YmJiLTRkZGQtOTgzMS00ODcxNGRlZDc0YjUifQ.eyJpYXQiOjE3MzM2NzQ2NzYsImp0aSI6ImJhOWMxYjliLTZhOTYtNDMwNC1hMzFjLWMwODBhZjVmOGRiNCIsImlzcyI6Imh0dHBzOi8vc3NvLnJlZGhhdC5jb20vYXV0aC9yZWFsbXMvcmVkaGF0LWV4dGVybmFsIiwiYXVkIjoiaHR0cHM6Ly9zc28ucmVkaGF0LmNvbS9hdXRoL3JlYWxtcy9yZWRoYXQtZXh0ZXJuYWwiLCJzdWIiOiJmOjUyOGQ3NmZmLWY3MDgtNDNlZC04Y2Q1LWZlMTZmNGZlMGNlNjpkYXZpZC5tLnRheWxvciIsInR5cCI6Ik9mZmxpbmUiLCJhenAiOiJyaHNtLWFwaSIsInNpZCI6IjM2ZDQ0YWFmLTc3YWUtNDM0OC04NDg4LTE4NDQyNWI0YjdmNiIsInNjb3BlIjoiYmFzaWMgcm9sZXMgd2ViLW9yaWdpbnMgY2xpZW50X3R5cGUucHJlX2tjMjUgb2ZmbGluZV9hY2Nlc3MifQ.eL3Cp_bX0GoQPmRqJhbRju0tDM-Ad32DLbxJ8IDDUraXXCxe6WZfxIl8Pjt1QocNpdgJpGvH2YA7sHxfYEcvUg"
+while getopts "di:h" OPTION
 do
   case "$OPTION" in
     # debug
     d) set -x
+    ;;
+    i) eval checksum=\${$OPTARG}
+    ;;
+    h) echo "$0 -i [ aap25 | aap25 | rhel90 | rhel86 | rhel79 | <checksum from portal> ]"
     ;;
   esac
 done

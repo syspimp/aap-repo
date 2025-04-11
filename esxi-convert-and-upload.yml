@@ -18,8 +18,8 @@
   tags: image
   vars:
     ESXIHOSTS:
-      - 10.55.102.158
-      - 10.55.102.159
+      - 10.55.102.160
+      - 10.55.102.161
     REQUIREDRPMS: "jq open-vm-tools"
     COPYIN:
       - download.sh
