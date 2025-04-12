@@ -20,7 +20,7 @@
     ESXIHOSTS:
       - 10.55.102.160
       - 10.55.102.161
-    REQUIREDRPMS: "jq open-vm-tools"
+    REQUIREDRPMS: "jq open-vm-tools python3"
     COPYIN:
       - download.sh
       - firstboot.sh
