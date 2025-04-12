@@ -113,10 +113,17 @@ EFF
   while [[ "XX${newhostname}XX" == "XXXX" ]]
   do
     newhostname=$(/usr/bin/vmware-rpctool "info-get guestinfo.hostname")
-    hostnamectl set-hostname ${newhostname}
-    systemctl restart NetworkManager
     sleep 10
   done
+
+  # set hostname and make sure it takes
+  hostnamectl set-hostname ${newhostname}
+  while [[ $? != 0 ]]
+  do
+    sleep 5
+    hostnamectl set-hostname ${newhostname}
+  done
+  systemctl restart NetworkManager
 
   # wait until vmtoolsd returns a role
   while [[ "XX${newrole}XX" == "XXXX" ]]
