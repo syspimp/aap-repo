@@ -118,11 +118,12 @@ EFF
 
   # set hostname and make sure it takes
   hostnamectl set-hostname ${newhostname}
-  while [[ $? != 0 ]]
-  do
+  if [[ $? != 0 ]]
+  then
     sleep 5
-    hostnamectl set-hostname ${newhostname}
-  done
+    hostname -b ${newhostname}
+    echo ${newhostname} > /etc/hostname
+  fi
   systemctl restart NetworkManager
 
   # wait until vmtoolsd returns a role
