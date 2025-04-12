@@ -2,22 +2,20 @@
 - name: error control for esxi hypervisor
   block:
   - name: "esxi_host: create directory to hold new vmdk"
-    file:
+    ansible.builtin.file:
       path: "{{ VMWROOT }}/{{ images[selected_os].output }}"
       state: directory
 
   - name: "esxi_host: removing old vmdk if exist"
-    file:
+    ansible.builtin.file:
       path: "{{ VMWROOT }}/{{ images[selected_os].output }}/{{ images[selected_os].output }}.vmdk"
       state: absent
 
   - name: "esxi_host: running vmkfstools to create new vmdk in directory"
-    shell: |
-      rm -f {{ VMWROOT }}/{{ images[selected_os].output }}/{{ images[selected_os].output }}.vmdk
+    ansible.builtin.shell: |
       vmkfstools -i {{ VMWROOT }}/{{ images[selected_os].output }}.tmp.vmdk  -d thin {{ VMWROOT }}/{{ images[selected_os].output }}/{{ images[selected_os].output }}.vmdk
-
   always:
   - name: "esxi_host: cleaning up and removing tmp vmdk"
-    file:
+    ansible.builtin.file:
       path: "{{ VMWROOT }}/{{ images[selected_os].output }}.tmp.vmdk"
       state: absent
